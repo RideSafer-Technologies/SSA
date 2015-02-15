@@ -1,3 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SSA</string>
+    // Titles        <string name="app_name">SSA</string>
+    <string name="title_activity_about_main">AboutMainActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="ssa_name">Smart Safety Alert</string>
+    <string name="rst_name">Ride Safer Technologies</string>
+    // Paragraphs        <string name="about_screen_explanation">The Smart Safety Alert (SSA) system will alert you when
+        you disconnect or are disconnected from your SSA hardware via Bluetooth while a child is
+        still detected in the car-seat.</string>
+    <string name="title_activity_fullscreen__alarm_">Fullscreen_Alarm_Activity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_user__manual_">User_Manual_Activity</string>
+
 </resources>

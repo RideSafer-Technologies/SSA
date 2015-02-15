@@ -1,9 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ridesafertechnologies.ssa">
+    package="com.ridesafertechnologies.ssa" >
 
-    <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher" android:theme="@style/AppTheme">
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".About_Main_Activity"
+            android:label="@string/title_activity_about_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".Communications"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".Data_Parser"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".Notification_Trigger"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".Log_Updater"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".Snooze_Timer"
+            android:exported="false" >
+        </service>
+
+        <activity
+            android:name=".Fullscreen_Alarm_Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fullscreen__alarm_"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
+        <activity
+            android:name=".Settings_Activity"
+            android:label="@string/title_activity_settings_" >
+        </activity>
+        <activity
+            android:name=".User_Manual_Activity"
+            android:label="@string/title_activity_user__manual_" >
+        </activity>
     </application>
 
 </manifest>
