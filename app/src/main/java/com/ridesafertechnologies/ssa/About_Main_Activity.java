@@ -8,9 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextSwitcher;
 
 
 public class About_Main_Activity extends ActionBarActivity {
+
+    private TextSwitcher ts_child_in_seat;
+    private TextSwitcher ts_bluetooth_connection;
+    private TextSwitcher ts_temperature_threshold;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +26,37 @@ public class About_Main_Activity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
+
+            // Get Reference
+//            ts_child_in_seat = (TextSwitcher) findViewById(R.id.is_child_in_seat);
+//            ts_bluetooth_connection = (TextSwitcher) findViewById(R.id.is_bluetooth_connectivity);
+//            ts_temperature_threshold = (TextSwitcher) findViewById(R.id.is_temp_threshold);
+//
+//            ts_child_in_seat.setFactory(child_Factory);
+
+            /*
+            * Set the in and out animations. Using the fade_in/out animations
+            * provided by the framework.
+            */
+//            Animation in = AnimationUtils.loadAnimation(this,
+//                    android.R.anim.fade_in);
+//            Animation out = AnimationUtils.loadAnimation(this,
+//                    android.R.anim.fade_out);
+//
+//
+//            ts_child_in_seat.setInAnimation(in);
+//            ts_child_in_seat.setOutAnimation(out);
         }
     }
+
+//    private ViewSwitcher.ViewFactory child_Factory = new ViewSwitcher.ViewFactory() {
+//        @Override
+//        public View makeView() {
+//            // Create a new TextView
+//            TextView tv_child_in_seat = new TextView(About_Main_Activity.this);
+//            return null;
+//        }
+//    };
 
 
     @Override
@@ -58,7 +93,12 @@ public class About_Main_Activity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
+
+
+
             return rootView;
         }
+
+
     }
 }

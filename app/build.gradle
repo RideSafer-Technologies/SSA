@@ -8,8 +8,8 @@ android {
         applicationId "com.ridesafertechnologies.ssa"
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        versionCode 0
+        versionName "0.01"
     }
     buildTypes {
         release {
