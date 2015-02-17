@@ -8,10 +8,6 @@
 
     <header
         android:fragment="com.ridesafertechnologies.ssa.Settings_Activity$NotificationPreferenceFragment"
-        android:title="@string/pref_header_notifications" />
-
-    <header
-        android:fragment="com.ridesafertechnologies.ssa.Settings_Activity$DataSyncPreferenceFragment"
-        android:title="@string/pref_header_data_sync" />
+        android:title="@string/pref_header_connectivity" />
 
 </preference-headers>
