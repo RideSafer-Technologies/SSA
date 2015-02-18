@@ -3,6 +3,7 @@ package com.ridesafertechnologies.ssa;
 import android.app.IntentService;
 import android.content.Intent;
 
+//Albert's section
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
