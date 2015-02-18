@@ -21,7 +21,15 @@ import android.text.TextUtils;
 import java.util.List;
 
 /**
- * Class Settings_Activity
+ * A {@link PreferenceActivity} that presents a set of application settings. On
+ * handset devices, settings are presented as a single list. On tablets,
+ * settings are split by category, with category headers shown to the left of
+ * the list of settings.
+ * <p/>
+ * See <a href="http://developer.android.com/design/patterns/settings.html">
+ * Android Design: Settings</a> for design guidelines and the <a
+ * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
+ * API Guide</a> for more information on developing a Settings UI.
  */
 public class Settings_Activity extends PreferenceActivity {
     /**
@@ -56,17 +64,16 @@ public class Settings_Activity extends PreferenceActivity {
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
-
         // Add 'data and sync' preferences, and a corresponding header.
-        PreferenceCategory connectivityHeader = new PreferenceCategory(this);
-        connectivityHeader.setTitle(R.string.pref_header_connectivity);
-        getPreferenceScreen().addPreference(connectivityHeader);
-        addPreferencesFromResource(R.xml.pref_data_sync);
+        PreferenceCategory fakeHeader = new PreferenceCategory(this);
+        fakeHeader.setTitle(R.string.pref_header_connectivity);
+        getPreferenceScreen().addPreference(fakeHeader);
+        addPreferencesFromResource(R.xml.pref_connectivity);
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
         // their values. When their values change, their summaries are updated
         // to reflect the new value, per the Android Design guidelines.
-        bindPreferenceSummaryToValue(findPreference("alarm_type"));
+        bindPreferenceSummaryToValue(findPreference("type_of_alarm_text"));
     }
 
     /**
@@ -136,6 +143,7 @@ public class Settings_Activity extends PreferenceActivity {
                 // using RingtoneManager.
                 if (TextUtils.isEmpty(stringValue)) {
                     // Empty values correspond to 'silent' (no ringtone).
+                    preference.setSummary("");
 
                 } else {
                     Ringtone ringtone = RingtoneManager.getRingtone(
@@ -197,7 +205,7 @@ public class Settings_Activity extends PreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("alarm_type"));
+            bindPreferenceSummaryToValue(findPreference("type_of_alarm_text"));
         }
     }
 
@@ -206,12 +214,11 @@ public class Settings_Activity extends PreferenceActivity {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
+    public static class ConnectivityPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-
-        }
+            addPreferencesFromResource(R.xml.pref_connectivity);
+       }
     }
 }
