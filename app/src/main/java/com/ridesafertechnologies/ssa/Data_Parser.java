@@ -3,6 +3,8 @@ package com.ridesafertechnologies.ssa;
 import android.app.IntentService;
 import android.content.Intent;
 
+//Albert's section
+//2nd attempt at commit + push
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
