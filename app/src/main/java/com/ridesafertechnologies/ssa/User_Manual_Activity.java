@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 
 public class User_Manual_Activity extends ActionBarActivity {
@@ -22,6 +23,7 @@ public class User_Manual_Activity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
     }
 
     @Override
@@ -60,6 +62,10 @@ public class User_Manual_Activity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_user_manual, container, false);
+
+            WebView wv = (WebView) rootView.findViewById(R.id.user_manual_web_view);
+            wv.loadUrl("file:///android_asset/UserManual.html");
+
             return rootView;
         }
     }
