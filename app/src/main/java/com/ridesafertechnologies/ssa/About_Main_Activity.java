@@ -21,8 +21,8 @@ public class About_Main_Activity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
-
         }
+
     }
 
     @Override
@@ -68,7 +68,5 @@ public class About_Main_Activity extends ActionBarActivity {
 
             return rootView;
         }
-
-
     }
 }

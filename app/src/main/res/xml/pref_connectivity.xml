@@ -3,7 +3,7 @@
     <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
          design guidelines. -->
     <Preference android:title="@string/pref_title_system_bluetooth_settings">
-        <intent android:action="android.settings.ACTION_BLUETOOTH_SETTINGS" />
+        <intent android:action="android.settings.BLUETOOTH_SETTINGS" />
     </Preference>
 
 </PreferenceScreen>

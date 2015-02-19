@@ -7,7 +7,7 @@
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="com.ridesafertechnologies.ssa.Settings_Activity$NotificationPreferenceFragment"
+        android:fragment="com.ridesafertechnologies.ssa.Settings_Activity$ConnectivityPreferenceFragment"
         android:title="@string/pref_header_connectivity" />
 
 </preference-headers>
