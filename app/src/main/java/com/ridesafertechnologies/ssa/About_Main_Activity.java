@@ -25,7 +25,6 @@ public class About_Main_Activity extends ActionBarActivity {
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -45,12 +44,14 @@ public class About_Main_Activity extends ActionBarActivity {
             Intent settingsActivity = new Intent(getApplicationContext(), Settings_Activity.class);
             startActivity(settingsActivity);
             return true;
+        } else if (id == R.id.action_user_manual) {
+            Intent userManualActivity = new Intent(getApplicationContext(), User_Manual_Activity.class);
+            startActivity(userManualActivity);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-
 
     /**
      * A placeholder fragment containing a simple view.
