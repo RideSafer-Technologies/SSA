@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 public class About_Main_Activity extends ActionBarActivity {
@@ -22,6 +23,9 @@ public class About_Main_Activity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+
+        TextView temperatureTextView = (TextView) findViewById(R.id.is_temp_threshold);
 
     }
 
@@ -65,6 +69,8 @@ public class About_Main_Activity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
+
+
 
             return rootView;
         }
