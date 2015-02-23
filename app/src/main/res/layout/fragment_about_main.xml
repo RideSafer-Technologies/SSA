@@ -105,13 +105,13 @@
             android:text="@string/bluetooth_connection"
             android:textColor="@color/primary_dark_material_dark" />
 
-        <TextSwitcher
+        <TextView
+            android:id="@+id/is_bluetooth_connectivity"
+            android:layout_marginTop="@dimen/abc_text_size_body_2_material"
+            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/abc_text_size_body_2_material"
             android:layout_below="@id/status"
-            android:layout_alignParentRight="true"
-            android:id="@+id/is_bluetooth_connectivity"
             android:textStyle="bold"
             android:textSize="15sp"/>
 
@@ -126,14 +126,14 @@
             android:text="@string/child_in_seat"
             android:textColor="@color/primary_dark_material_dark" />
 
-        <TextSwitcher
+        <TextView
+            android:id="@+id/is_child_in_seat"
+            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bluetooth_connectivity"
-            android:layout_alignParentRight="true"
-            android:id="@+id/is_child_in_seat"
+            android:layout_below="@id/is_bluetooth_connectivity"
             android:textStyle="bold"
-            android:textSize="15sp" />
+            android:textSize="15sp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -146,12 +146,32 @@
             android:text="@string/temp_threshold"
             android:textColor="@color/primary_dark_material_dark"/>
 
-        <TextSwitcher
+        <TextView
+            android:id="@+id/is_temperature_threshold"
+            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/child_in_seat"
+            android:layout_below="@id/is_child_in_seat"
+            android:textStyle="bold"
+            android:textSize="15sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/temp_threshold"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/Battery_Status"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:text="@string/battery_status"
+            android:textColor="@color/primary_dark_material_dark"/>
+
+        <TextView
+            android:id="@+id/is_battery_status"
             android:layout_alignParentRight="true"
-            android:id="@+id/is_temp_threshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/is_temperature_threshold"
             android:textStyle="bold"
             android:textSize="15sp"/>
 
@@ -159,7 +179,7 @@
             android:layout_width="fill_parent"
             android:layout_height="2dp"
             android:layout_marginTop="@dimen/abc_text_size_body_1_material"
-            android:layout_below="@id/temp_threshold"
+            android:layout_below="@id/Battery_Status"
             android:id="@+id/hr_Status_Lower"
             android:background="@color/black_overlay" />
 

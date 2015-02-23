@@ -18,11 +18,15 @@
     <string name="title_activity_about_main">SSA</string>
     <string name="status"><b><u>Status</u></b></string>
     <string name="bluetooth_connection"><b>Bluetooth:</b></string>
-    <string name="is_bluetooth_connection">Disconnected</string>
+    <string name="is_bluetooth_connection_true">Connected</string>
+    <string name="is_bluetooth_connection_false">Disconnected</string>
     <string name="child_in_seat"><b>Child in Car-Seat:</b></string>
-    <string name="is_child_in_seat">Not In Seat</string>
+    <string name="is_child_in_seat_true">In Seat</string>
+    <string name="is_child_in_seat_false">Not In Seat</string>
     <string name="temp_threshold"><b>Temperature Threshold:</b></string>
-    <string name="is_temp_threshold">Within Threshold</string>
+    <string name="is_temp_threshold_true">Within Threshold</string>
+    <string name="is_temp_threshold_false">Threshold Surpassed</string>
+    <string name="battery_status">Battery Status:</string>
     <string name="about_screen_explanation">The <i><b>Smart Safety Alert (SSA)</b></i> system will
         alert you when you disconnect or are disconnected from your SSA hardware via Bluetooth while
         a child is still detected in the car-seat.</string>

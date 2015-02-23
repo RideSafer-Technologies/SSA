@@ -3,9 +3,6 @@ package com.ridesafertechnologies.ssa;
 import android.app.IntentService;
 import android.content.Intent;
 
-//Albert's section
-//2nd attempt at commit + push
-
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -21,6 +18,24 @@ public class Data_Parser extends IntentService {
     // TODO: Rename parameters
     public static final String EXTRA_PARAM1 = "com.ridesafertechnologies.ssa.extra.PARAM1";
     public static final String EXTRA_PARAM2 = "com.ridesafertechnologies.ssa.extra.PARAM2";
+
+    //----------------------------------System Wide Variables-------------------------------------//
+    private static boolean isTempThresholdReached = false;
+    private static boolean isChildInSeat = false;
+    private static boolean isCharging = false;
+
+    //-----------------------------------------Getters--------------------------------------------//
+    public static boolean getIsTempThresholdReached() {
+        return isTempThresholdReached;
+    }
+
+    public static boolean getIsChildInSeat() {
+        return isChildInSeat;
+    }
+
+    public static boolean getIsCharging() {
+        return isCharging;
+    }
 
     public Data_Parser() {
         super("Data_Parser");
