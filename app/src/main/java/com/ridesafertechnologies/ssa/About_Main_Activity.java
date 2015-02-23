@@ -1,5 +1,6 @@
 package com.ridesafertechnologies.ssa;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -86,8 +87,19 @@ public class About_Main_Activity extends ActionBarActivity {
             TextView temperatureTextView = (TextView) rootView.findViewById(R.id.is_temperature_threshold);
             TextView batteryTextView = (TextView) rootView.findViewById(R.id.is_battery_status);
 
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
             //Set Text of 'bluetoothTextView' with attributes
-            bluetoothTextView.setText("Unknown");
+            if(mBluetoothAdapter == null) {
+                bluetoothTextView.setText("Your App Won't Work");
+                bluetoothTextView.setTextColor(Color.RED);
+            } else if (mBluetoothAdapter.isEnabled()) {
+                bluetoothTextView.setText("Enabled");
+                bluetoothTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
+            } else {
+                bluetoothTextView.setText("Disabled");
+                bluetoothTextView.setTextColor(Color.RED);
+            }
 
             //Set Text of 'childTextView' with attributes
             if(isChild) {
@@ -118,6 +130,5 @@ public class About_Main_Activity extends ActionBarActivity {
         }
 
     } // END PlaceholderFragment
-
 
 } // END About_Main_Activity
