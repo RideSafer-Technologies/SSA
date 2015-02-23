@@ -63,14 +63,23 @@ public class About_Main_Activity extends ActionBarActivity {
         private final int DK_GREEN_VAL_GREEN = 145;
         private final int DK_GREEN_VAL_BLUE = 7;
 
+        View rootView;
+
         public AboutScreenFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
+            rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
 
+            updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
+                    Data_Parser.getIsCharging());
+
+            return rootView;
+        }  // END PlaceholderFragment OnCreateView()
+
+        public void updateText(boolean isChild, boolean isTemperature, boolean isBattery) {
             // Bind Views
             TextView bluetoothTextView = (TextView) rootView.findViewById(R.id.is_bluetooth_connectivity);
             TextView childTextView = (TextView) rootView.findViewById(R.id.is_child_in_seat);
@@ -81,7 +90,7 @@ public class About_Main_Activity extends ActionBarActivity {
             bluetoothTextView.setText("Unknown");
 
             //Set Text of 'childTextView' with attributes
-            if(Data_Parser.getIsChildInSeat()) {
+            if(isChild) {
                 childTextView.setText("Child In Seat");
                 childTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
             } else {
@@ -90,7 +99,7 @@ public class About_Main_Activity extends ActionBarActivity {
             }
 
             //Set Text of 'temperatureTextView' with attributes
-            if(Data_Parser.getIsTempThresholdReached()) {
+            if(isTemperature) {
                 temperatureTextView.setText("Temperature Threshold Surpassed");
                 temperatureTextView.setTextColor(Color.RED);
             } else {
@@ -99,16 +108,14 @@ public class About_Main_Activity extends ActionBarActivity {
             }
 
             //Set Text of batteryTextView' with attributes
-            if(Data_Parser.getIsCharging()) {
+            if(isBattery) {
                 batteryTextView.setText("Charging");
                 batteryTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
             } else {
                 batteryTextView.setText("Discharging");
                 batteryTextView.setTextColor(Color.RED);
             }
-
-            return rootView;
-        }  // END PlaceholderFragment OnCreateView()
+        }
 
     } // END PlaceholderFragment
 
