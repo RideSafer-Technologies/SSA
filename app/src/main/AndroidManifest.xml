@@ -56,6 +56,11 @@
             android:name=".User_Manual_Activity"
             android:label="@string/title_activity_user__manual_" >
         </activity>
+
+        <service
+            android:name=".util.Communications_Intent"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>
