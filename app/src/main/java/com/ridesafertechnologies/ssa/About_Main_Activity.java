@@ -3,12 +3,10 @@ package com.ridesafertechnologies.ssa;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -17,9 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class About_Main_Activity extends ActionBarActivity {
+
+    private static final int BLUETOOTH_ALERT = 10;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,15 +30,14 @@ public class About_Main_Activity extends ActionBarActivity {
                     .add(R.id.container, new AboutScreenFragment())
                     .commit();
         }
-
     } // END About_Main_Activity onCreate
 
+    @Override
     protected void onResume() {
         super.onResume();
-        setContentView(R.layout.activity_about_main);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, new AboutScreenFragment())
-                .commit();
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(!mBluetoothAdapter.isEnabled())
+            showDialog(BLUETOOTH_ALERT);
     }
 
     @Override
@@ -93,6 +93,13 @@ public class About_Main_Activity extends ActionBarActivity {
             return rootView;
         }  // END PlaceholderFragment OnCreateView()
 
+        @Override
+        public void onResume() {
+            super.onResume();
+            updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
+                    Data_Parser.getIsCharging());
+        }
+
         public void updateText(boolean isChild, boolean isTemperature, boolean isBattery) {
             // Bind Views
             TextView bluetoothTextView = (TextView) rootView.findViewById(R.id.is_bluetooth_connectivity);
@@ -108,18 +115,18 @@ public class About_Main_Activity extends ActionBarActivity {
                 bluetoothTextView.setTextColor(Color.RED);
             } else if (mBluetoothAdapter.isEnabled()) {
                 bluetoothTextView.setText("Enabled");
-                bluetoothTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
+                bluetoothTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,
+                        DK_GREEN_VAL_BLUE));
             } else {
                 bluetoothTextView.setText("Disabled");
                 bluetoothTextView.setTextColor(Color.RED);
-                Bluetooth_Verification bluetoothVerification = new Bluetooth_Verification();
-
             }
 
             //Set Text of 'childTextView' with attributes
             if(isChild) {
                 childTextView.setText("Child in Seat");
-                childTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
+                childTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,
+                        DK_GREEN_VAL_BLUE));
             } else {
                 childTextView.setText("Child Not in Seat");
                 childTextView.setTextColor(Color.RED);
@@ -131,47 +138,52 @@ public class About_Main_Activity extends ActionBarActivity {
                 temperatureTextView.setTextColor(Color.RED);
             } else {
                 temperatureTextView.setText("Within Threshold");
-                temperatureTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
+                temperatureTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,
+                        DK_GREEN_VAL_BLUE));
             }
 
             //Set Text of batteryTextView' with attributes
             if(isBattery) {
                 batteryTextView.setText("Charging");
-                batteryTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,DK_GREEN_VAL_BLUE));
+                batteryTextView.setTextColor(Color.rgb(DK_GREEN_VAL_RED,DK_GREEN_VAL_GREEN,
+                        DK_GREEN_VAL_BLUE));
             } else {
                 batteryTextView.setText("Discharging");
                 batteryTextView.setTextColor(Color.RED);
             }
         } // END updateText
 
-    } // END PlaceholderFragment
+    } // END AboutScreenFragment
 
-    public static class Bluetooth_Verification extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Construct the Dialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder .setTitle(R.string.bluetooth_alert_title)
-                    .setMessage(R.string.bluetooth_alert_message)
-                    .setPositiveButton(R.string.bluetooth_alert_positive, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Intent.ACTION_MAIN, null);
-                            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                            ComponentName cn = new ComponentName("com.android.settings",
-                                    "com.android.bluetoothSettings");
-                            intent.setComponent(cn);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(R.string.bluetooth_alert_negative, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // User Cancelled the dialog
-                        }
-                    });
-            return builder.create();
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case BLUETOOTH_ALERT:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Bluetooth Verification");
+                builder.setMessage("The Bluetooth is turned off. The SSA App requires that the " +
+                        "Bluetooth be turned on in order to function properly.");
+                builder.setCancelable(true);
+                builder.setPositiveButton("Open Bluetooth Settings", new OkOnClickListener());
+                builder.setNegativeButton("Cancel", new CancelOnClickListener());
+                AlertDialog bluetoothDialog = builder.create();
+                bluetoothDialog.show();
+        }
+        return super.onCreateDialog(id);
+    }
+
+    private final class CancelOnClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialogInterface, int which) {
+            Toast.makeText(getApplicationContext(), "The SSA App will not work correctly without " +
+            "the bluetooth connection", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private final class OkOnClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialogInterface, int which) {
+            Intent intentOpenBluetoothSettings = new Intent();
+            intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+            startActivity(intentOpenBluetoothSettings);
         }
     }
 
