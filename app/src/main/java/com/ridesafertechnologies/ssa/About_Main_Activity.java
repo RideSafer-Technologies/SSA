@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class About_Main_Activity extends ActionBarActivity {
+public class noAbout_Main_Activity extends ActionBarActivity {
 
     private static final int BLUETOOTH_ALERT = 10;
 
