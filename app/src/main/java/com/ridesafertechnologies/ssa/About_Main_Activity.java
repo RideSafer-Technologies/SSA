@@ -18,8 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class noAbout_Main_Activity extends ActionBarActivity {
-
+public class About_Main_Activity extends ActionBarActivity {
+    //private static final String FULLSCREEN_ALARM = "com.ridesafertechnologies.ssa.FULLSCREEN_ALARM";
     private static final int BLUETOOTH_ALERT = 10;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,5 +186,4 @@ public class noAbout_Main_Activity extends ActionBarActivity {
             startActivity(intentOpenBluetoothSettings);
         }
     }
-
 } // END About_Main_Activity

@@ -43,12 +43,6 @@
         </service>
 
         <activity
-            android:name=".Fullscreen_Alarm_Activity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_fullscreen__alarm_"
-            android:theme="@style/FullscreenTheme" >
-        </activity>
-        <activity
             android:name=".Settings_Activity"
             android:label="@string/title_activity_settings_" >
         </activity>
@@ -61,6 +55,12 @@
             android:name=".util.Communications_Intent"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name=".Full_Screen_Alarm"
+            android:label="@string/title_activity_full__screen__alarm"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>
