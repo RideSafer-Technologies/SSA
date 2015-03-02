@@ -1,7 +1,10 @@
 package com.ridesafertechnologies.ssa;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
+import android.os.IBinder;
+import android.widget.Toast;
 
 
 /**
@@ -11,6 +14,19 @@ import android.content.Intent;
  * TODO: Customize class - update intent actions and extra parameters.
  */
 public class Communications extends IntentService {
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // TODO: Do something Useful
+        return Service.START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: For Communication return IBinder implementation
+        return null;
+    }
+
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     public static final String ACTION_FOO = "com.ridesafertechnologies.ssa.action.FOO";
@@ -27,6 +43,7 @@ public class Communications extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+            Toast.makeText(getApplicationContext(), "Comms Service STARTED", Toast.LENGTH_LONG).show();
             final String action = intent.getAction();
             if (ACTION_FOO.equals(action)) {
                 final String param1 = intent.getStringExtra(EXTRA_PARAM1);

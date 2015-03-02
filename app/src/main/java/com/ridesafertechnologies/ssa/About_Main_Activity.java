@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class noAbout_Main_Activity extends ActionBarActivity {
+public class About_Main_Activity extends ActionBarActivity {
 
     private static final int BLUETOOTH_ALERT = 10;
 
@@ -30,6 +30,9 @@ public class noAbout_Main_Activity extends ActionBarActivity {
                     .add(R.id.container, new AboutScreenFragment())
                     .commit();
         }
+
+        Intent commsService = new Intent(this, Communications.class);
+        startService(commsService);
     } // END About_Main_Activity onCreate
 
     @Override
@@ -38,6 +41,8 @@ public class noAbout_Main_Activity extends ActionBarActivity {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!mBluetoothAdapter.isEnabled())
             showDialog(BLUETOOTH_ALERT);
+
+
     }
 
     @Override
