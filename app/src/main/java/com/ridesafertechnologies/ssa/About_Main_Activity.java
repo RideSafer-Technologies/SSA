@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -30,9 +31,8 @@ public class About_Main_Activity extends ActionBarActivity {
                     .add(R.id.container, new AboutScreenFragment())
                     .commit();
         }
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
-        Intent commsService = new Intent(this, Communications.class);
-        startService(commsService);
     } // END About_Main_Activity onCreate
 
     @Override
@@ -41,8 +41,6 @@ public class About_Main_Activity extends ActionBarActivity {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!mBluetoothAdapter.isEnabled())
             showDialog(BLUETOOTH_ALERT);
-
-
     }
 
     @Override

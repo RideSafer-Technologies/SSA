@@ -15,6 +15,17 @@ import android.widget.Toast;
  */
 public class Communications extends IntentService {
 
+    String dataToken = "";
+    boolean onSnooze = false;
+
+    public String getDataToken() {
+        return dataToken;
+    }
+
+    public boolean isOnSnooze() {
+        return onSnooze;
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // TODO: Do something Useful

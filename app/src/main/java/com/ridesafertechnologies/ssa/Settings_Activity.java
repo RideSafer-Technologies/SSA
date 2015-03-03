@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 
-
 import java.util.List;
 
 /**
@@ -35,6 +34,7 @@ public class Settings_Activity extends PreferenceActivity {
     /**
      * Determines whether to always show the simplified settings UI, where
      * settings are presented in a single list. When false, settings are shown
+     *
      * as a master/detail two-pane view on tablets. When true, a single pane is
      * shown on tablets.
      */
@@ -65,9 +65,9 @@ public class Settings_Activity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.pref_general);
 
         // Add 'data and sync' preferences, and a corresponding header.
-        PreferenceCategory fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle(R.string.pref_header_connectivity);
-        getPreferenceScreen().addPreference(fakeHeader);
+        PreferenceCategory prefHeader = new PreferenceCategory(this);
+        prefHeader.setTitle(R.string.pref_header_connectivity);
+        getPreferenceScreen().addPreference(prefHeader);
         addPreferencesFromResource(R.xml.pref_connectivity);
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
