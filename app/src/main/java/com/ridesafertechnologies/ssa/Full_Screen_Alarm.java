@@ -1,5 +1,6 @@
 package com.ridesafertechnologies.ssa;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -8,13 +9,21 @@ import android.view.View;
 
 
 public class Full_Screen_Alarm extends ActionBarActivity {
-
+    private boolean close = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full__screen__alarm);
     }
-
+    //use another intent to close the full screen alarm activity
+    @Override
+    protected void onNewIntent(Intent intent){
+        super.onNewIntent(intent);
+        close = intent.getExtras().getBoolean("close");
+        if(close = true){
+            this.finish();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -38,11 +47,14 @@ public class Full_Screen_Alarm extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
     public void dismiss(View view){
-        this.finish();
+        //it only hides the activity and waits to be killed by the
+        //notification trigger.
+        this.moveTaskToBack(true);
     }
     public void snooze(View view) {
+        //send intent to snooze service
         this.moveTaskToBack(true);
-        //not sure how to bring it back
+        //need the snooze service to bring it back
     }
     //Below is the intent that worked for the demo commented out.
     /*

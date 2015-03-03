@@ -2,6 +2,8 @@ package com.ridesafertechnologies.ssa;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 
 /**
@@ -11,52 +13,137 @@ import android.content.Intent;
  * TODO: Customize class - update intent actions and extra parameters.
  */
 public class Notification_Trigger extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    public static final String ACTION_FOO = "com.ridesafertechnologies.ssa.action.FOO";
-    public static final String ACTION_BAZ = "com.ridesafertechnologies.ssa.action.BAZ";
-
-    // TODO: Rename parameters
-    public static final String EXTRA_PARAM1 = "com.ridesafertechnologies.ssa.extra.PARAM1";
-    public static final String EXTRA_PARAM2 = "com.ridesafertechnologies.ssa.extra.PARAM2";
+    private boolean child;
+    private boolean temp;
+    private boolean charging;
+    private boolean connection;
+    private boolean alarmTrig;
+    private int alarmType;
 
     public Notification_Trigger() {
         super("Notification_Trigger");
+        child = false;
+        temp = false;
+        charging = false;
+        alarmType = 0;
+        alarmTrig = false;
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+    protected void onHandleIntent(Intent Data) {
+        updateData();
+        setAlarmType();
+        if(child == true && charging == false) {
+            while(child == true) {
+                if(temp == true && alarmTrig == false) {
+                    runAlarm();
+                } else if (connection == false && alarmTrig == false) {
+                    runAlarm();
+                }
+                updateData();
             }
+            killAlarm();
+
         }
+
+    }
+    // Getter methods
+    public boolean getChild(){
+        return child;
+    }
+    public boolean getTemp(){
+        return temp;
+    }
+    public boolean getCharging(){
+        return charging;
+    }
+    //Setter methods
+    public void setChild(boolean ch){
+        child = ch;
+    }
+    public void setTemp(boolean tmp){
+        temp = tmp;
+    }
+    public void setCharging(boolean chrg){
+        charging = chrg;
+    }
+    public void setAlarmType(){
+        // Set the type of alarm
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        alarmType = Integer.parseInt(sharedPreferences.getString("type_of_alarm_text", "0"));
+    }
+    // Not sure how to check for this yet. I think it will happen
+    //when the communications class is done.
+    public void setConnection(boolean con){
+        connection = con;
+    }
+    // Alarm function checks for alarm type and then
+    // executes an alarm.
+    public void runAlarm(){
+        if(alarmType == 0){
+            Intent fullAlarm;
+            fullAlarm = new Intent(getApplicationContext(), Full_Screen_Alarm.class);
+            //The next two lines ensure there is only one instance of the fullScreen alarm
+            //activity.
+            fullAlarm.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            fullAlarm.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(fullAlarm);
+        }
+        else if(alarmType == 1){
+            //run code dialog alert
+        }
+        else if(alarmType == 2){
+            //run code toast notification
+
+        }
+        else{
+            //if the alarm type is an invalid setting, set to full screen.
+            alarmType = 0;
+            // then re-run the alarm
+            runAlarm();
+        }
+        alarmTrig = true;
+    }
+    // The killAlarm method uses an intent to close the Full_Screen_Alarm
+    protected void killAlarm(){
+        if(alarmType ==0)
+        {
+            Intent closeAlarm = new Intent(getApplicationContext(), Full_Screen_Alarm.class);
+            closeAlarm.putExtra("close", true);
+            startActivity(closeAlarm);
+        }
+        else if(alarmType == 1){
+            //kill dialog alarm
+        }
+        else if(alarmType ==2){
+            //kill toast alarm
+        }
+        alarmTrig = false;
+    }
+    protected void updateData(){
+        setChild(Data_Parser.getIsChildInSeat());
+        setTemp(Data_Parser.getIsTempThresholdReached());
+        setCharging(Data_Parser.getIsCharging());
+        //setConnection(Communications.???insertGetFunction);
     }
 
     /**
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
+   /* private void handleActionFoo(String param1, String param2) {
         // TODO: Handle action Foo
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
+*/
     /**
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz(String param1, String param2) {
+    /*private void handleActionBaz(String param1, String param2) {
         // TODO: Handle action Baz
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+    */
     
 }
