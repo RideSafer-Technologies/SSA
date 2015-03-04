@@ -88,44 +88,51 @@ public class About_Main_Activity extends ActionBarActivity {
         private final int DK_GREEN_VAL_RED = 7;
         private final int DK_GREEN_VAL_GREEN = 145;
         private final int DK_GREEN_VAL_BLUE = 7;
-        BluetoothAdapter mBluetoothAdapter;
+        BluetoothAdapter mBluetoothAdapter = null;
+        BluetoothDevice mBluetoothDevice = null;
         protected static final int SUCCESS_CONNECT = 0;
         protected static final int MESSAGE_READ = 1;
         TextView bluetoothTextView;
         TextView childTextView;
         TextView temperatureTextView;
         TextView batteryTextView;
-        TextView btData;
+        static TextView btTextView;
+        String btString;
+        //String bluetoothDeviceMacAddy = "20:14:12:17:10:69";  <<--hardcoded mac address, no longer necessary
         
-        
-        //i've even tried to hardcode macaddress of my HC-06 unit
-        String bluetoothDeviceMacAddy = "20:14:12:17:10:69";
-        
+        //handler
         android.os.Handler mHandler = new android.os.Handler() {
             @Override
             public void handleMessage(Message msg) {
-                // TODO Auto-generated method stub
                 super.handleMessage(msg);
-                switch(msg.what){
+                switch (msg.what) {
                     case SUCCESS_CONNECT:
-                        // WE ARE OFFICIALLY CONNECTED!!
                         //TODO do something here that pushes to parser
-
-                        ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket)msg.obj);
-                        Toast.makeText(getActivity(), "CONNECT", Toast.LENGTH_LONG).show();
-                        String s = "successfully connected";
-                        connectedThread.write(s.getBytes());
+                        ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
                         break;
                     case MESSAGE_READ:
-                        byte[] readBuf = (byte[])msg.obj;
-                        String string = new String(readBuf);
-                        btData.setText(string);
-                        Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+                        byte[] readBuf = (byte[]) msg.obj;
+                        btString = new String(readBuf);
+                        //populate a 'test' TextView with data pushed from Arduino
+                        //THIS IS NOT WORKING for some reason.
+                        btTextView.setText(btString);
+                        //Toast.makeText(getActivity(), btString, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
         };
 
+<<<<<<< HEAD
+||||||| merged common ancestors
+
+
+
+
+
+=======
+
+
+>>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
         View rootView;
 
         public AboutScreenFragment() {
@@ -138,39 +145,73 @@ public class About_Main_Activity extends ActionBarActivity {
 
             rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
             init(); //initialize all components
-            
             updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
                     Data_Parser.getIsCharging());
+            findAndConnectSSA();
+            return rootView;
+        }  // END PlaceholderFragment OnCreateView()
 
-            
-            
+        public void findAndConnectSSA() {
+            /*
+             * so far connectivity works ONLY if bluetooth is initially on.
+             */
             
             /*
-             * I think the error in why it's not connecting lies in this code here.
-             * I've tried to make it so that it connects to a device who's address is exactly that
-             * of my HC-06 device..to no avail...will continue to work on this, but this is the
-             * closest i've gotten to a working unit.* * * *
-             */
+             * Bluetooth related connectivity for hardcoded MAC address
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            connectDevice(bluetoothDeviceMacAddy);
+            ConnectThread newConnection = new ConnectThread(mBluetoothDevice);
+            newConnection.run();
+            */
+
+            //finds BT named "SSA" from list and connects to it
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
             // If there are paired devices
             if (pairedDevices.size() > 0) {
                 // Loop through paired devices
                 for (BluetoothDevice device : pairedDevices) {
                     // Add the name and address to an array adapter to show in a ListView
-                    if(device.getAddress() == bluetoothDeviceMacAddy){
-                        BluetoothDevice mBluetoothDevice = device; //this is redundant...maybe my call to create is just creating an instance of itself.
-                        ConnectThread mConnectThread;
-                        mConnectThread = new ConnectThread(mBluetoothDevice);
-                        mConnectThread.start();
+                    if(device.getName().equals("SSA")){
+                        mBluetoothDevice = device;
+                        connectDevice(mBluetoothDevice.getAddress());
+                        ConnectThread newSSAConnection = new ConnectThread(mBluetoothDevice);
+                        newSSAConnection.run();
                     }
                 }
             }
+        }
+
+<<<<<<< HEAD
+
+            return rootView;
+        }  // END PlaceholderFragment OnCreateView()
+
+
+||||||| merged common ancestors
+
 
 
             return rootView;
         }  // END PlaceholderFragment OnCreateView()
 
 
+=======
+        private void connectDevice(String address){
+            //Log.d(TAG, "connectDevice address: " + address);
+            
+            if (mBluetoothAdapter == null) {
+                bluetoothTextView.setText("Not a bluetooth device");
+            }            
+            mBluetoothDevice=mBluetoothAdapter.getRemoteDevice(address);
+            try {
+                mBluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
+            }
+            catch (  IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+>>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
         private class ConnectThread extends Thread {
             private final BluetoothSocket mmSocket;
             private final BluetoothDevice mmDevice;
@@ -206,7 +247,7 @@ public class About_Main_Activity extends ActionBarActivity {
                 }
 
                 // Do work to manage the connection (in a separate thread)
-                manageConnectedSocket(mmSocket);
+                mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
             }
 
             private void manageConnectedSocket(BluetoothSocket mmSocket2){
@@ -273,7 +314,7 @@ public class About_Main_Activity extends ActionBarActivity {
                     mmSocket.close();
                 } catch (IOException e) { }
             }
-        }
+        }//END connectedthread
 
 
 
@@ -339,6 +380,13 @@ public class About_Main_Activity extends ActionBarActivity {
             }
         } // END updateText
 
+<<<<<<< HEAD
+||||||| merged common ancestors
+
+=======
+
+
+>>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
     } // END AboutScreenFragment
 
     @Override
@@ -356,7 +404,9 @@ public class About_Main_Activity extends ActionBarActivity {
                 bluetoothDialog.show();
         }
         return super.onCreateDialog(id);
-    }
+    } // END of Dialog
+    
+    
 
     private final class CancelOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialogInterface, int which) {
