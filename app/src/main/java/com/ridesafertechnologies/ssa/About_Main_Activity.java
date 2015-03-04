@@ -5,8 +5,11 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
@@ -21,17 +24,26 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ridesafertechnologies.ssa.util.dataService;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ *
+ */
 public class About_Main_Activity extends ActionBarActivity {
 
     private static final int BLUETOOTH_ALERT = 10;
     public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_main);
@@ -41,27 +53,24 @@ public class About_Main_Activity extends ActionBarActivity {
                     .commit();
         }
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-
     } // END About_Main_Activity onCreate
 
-//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent updateIntent){
-//            updateUI(updateIntent);
-//        }
-//    };
-
+    /**
+     *
+     */
     @Override
     protected void onResume() {
         super.onResume();
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!mBluetoothAdapter.isEnabled())
             showDialog(BLUETOOTH_ALERT);
-//        startService(updateIntent);
-//        registerReceiver(broadcastReceiver, new IntentFilter(dataService.DATA_SERVICE_ACTION));
     }
 
-
+    /**
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -69,6 +78,11 @@ public class About_Main_Activity extends ActionBarActivity {
         return true;
     } // END onCreateOptionsMenu()
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -91,7 +105,7 @@ public class About_Main_Activity extends ActionBarActivity {
     } // END onOptionsItemSelected()
 
     /**
-     * A placeholder fragment containing a simple view.
+     *
      */
     public static class AboutScreenFragment extends Fragment {
 
@@ -116,6 +130,7 @@ public class About_Main_Activity extends ActionBarActivity {
 
         // Root View for View Control
         View rootView;
+
         private static final String TAG = "dataServiceUpdate";
         private Intent updateIntent;
         
@@ -141,22 +156,16 @@ public class About_Main_Activity extends ActionBarActivity {
             }
         };
 
-<<<<<<< HEAD
-||||||| merged common ancestors
-
-
-
-
-
-=======
-
-
->>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
-        View rootView;
-
         public AboutScreenFragment() {
         }
 
+        /**
+         *
+         * @param inflater
+         * @param container
+         * @param savedInstanceState
+         * @return
+         */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -168,10 +177,13 @@ public class About_Main_Activity extends ActionBarActivity {
             updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
                     Data_Parser.getIsCharging());
             findAndConnectSSA();
+
+            updateIntent = new Intent(rootView.getContext(), dataService.class);
+
             return rootView;
         }  // END PlaceholderFragment OnCreateView()
 
-            updateIntent = new Intent(rootView.getContext(), dataService.class);
+
 
         public void findAndConnectSSA() {
             /*
@@ -193,7 +205,7 @@ public class About_Main_Activity extends ActionBarActivity {
                 // Loop through paired devices
                 for (BluetoothDevice device : pairedDevices) {
                     // Add the name and address to an array adapter to show in a ListView
-                    if(device.getName().equals("SSA")){
+                    if (device.getName().equals("SSA")) {
                         mBluetoothDevice = device;
                         connectDevice(mBluetoothDevice.getAddress());
                         ConnectThread newSSAConnection = new ConnectThread(mBluetoothDevice);
@@ -203,12 +215,6 @@ public class About_Main_Activity extends ActionBarActivity {
             }
         }
 
-<<<<<<< HEAD
-
-            return rootView;
-        }  // END PlaceholderFragment OnCreateView()
-
-
         private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent updateIntent){
@@ -216,15 +222,6 @@ public class About_Main_Activity extends ActionBarActivity {
             }
         };
 
-||||||| merged common ancestors
-
-
-
-            return rootView;
-        }  // END PlaceholderFragment OnCreateView()
-
-
-=======
         private void connectDevice(String address){
             //Log.d(TAG, "connectDevice address: " + address);
             
@@ -239,8 +236,7 @@ public class About_Main_Activity extends ActionBarActivity {
                 e.printStackTrace();
             }
         }
-        
->>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
+
         private class ConnectThread extends Thread {
             private final BluetoothSocket mmSocket;
             private final BluetoothDevice mmDevice;
@@ -367,7 +363,6 @@ public class About_Main_Activity extends ActionBarActivity {
             childTextView = (TextView) rootView.findViewById(R.id.is_child_in_seat);
             temperatureTextView = (TextView) rootView.findViewById(R.id.is_temperature_threshold);
             batteryTextView = (TextView) rootView.findViewById(R.id.is_battery_status);
-
         }
 
         public void updateText(boolean isChild, boolean isTemperature, boolean isBattery) {
@@ -415,13 +410,6 @@ public class About_Main_Activity extends ActionBarActivity {
             }
         } // END updateText
 
-<<<<<<< HEAD
-||||||| merged common ancestors
-
-=======
-
-
->>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
         private void updateUI(Intent updateIntent) {
 
             boolean isChildInSeat = updateIntent.getBooleanExtra("ChildInSeat", false);
@@ -431,7 +419,6 @@ public class About_Main_Activity extends ActionBarActivity {
 
             updateText(isChildInSeat, isTemperatureThreshold,isCharging);
         }
-
     } // END AboutScreenFragment
 
     @Override
@@ -450,8 +437,6 @@ public class About_Main_Activity extends ActionBarActivity {
         }
         return super.onCreateDialog(id);
     } // END of Dialog
-    
-    
 
     private final class CancelOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialogInterface, int which) {
@@ -467,20 +452,4 @@ public class About_Main_Activity extends ActionBarActivity {
             startActivity(intentOpenBluetoothSettings);
         }
     }
-
-//    private void updateUI(Intent updateIntent) {
-//        String isChildInSeat = updateIntent.getStringExtra("ChildInSeat");
-//        String isTemperatureThreshold = updateIntent.getStringExtra("TemperatureThreshold");
-//        String isAlarmState = updateIntent.getStringExtra("AlarmState");
-//        String isCharging = updateIntent.getStringExtra("Charging");
-//
-//        Log.d(TAG, isChildInSeat);
-//        Log.d(TAG, isTemperatureThreshold);
-//        Log.d(TAG, isAlarmState);
-//        Log.d(TAG, isCharging);
-//
-//        updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
-//                Data_Parser.getIsCharging());
-//    }
-
 } // END About_Main_Activity
