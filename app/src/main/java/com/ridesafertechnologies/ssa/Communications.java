@@ -15,15 +15,10 @@ import android.widget.Toast;
  */
 public class Communications extends IntentService {
 
-    String dataToken = "";
-    boolean onSnooze = false;
+    private static String dataToken = "#500.2+90.23+1+0+~";
 
-    public String getDataToken() {
+    public static String getDataToken() {
         return dataToken;
-    }
-
-    public boolean isOnSnooze() {
-        return onSnooze;
     }
 
     @Override

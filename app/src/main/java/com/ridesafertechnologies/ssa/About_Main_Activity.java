@@ -44,13 +44,23 @@ public class About_Main_Activity extends ActionBarActivity {
 
     } // END About_Main_Activity onCreate
 
+//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent updateIntent){
+//            updateUI(updateIntent);
+//        }
+//    };
+
     @Override
     protected void onResume() {
         super.onResume();
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!mBluetoothAdapter.isEnabled())
             showDialog(BLUETOOTH_ALERT);
+//        startService(updateIntent);
+//        registerReceiver(broadcastReceiver, new IntentFilter(dataService.DATA_SERVICE_ACTION));
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -100,6 +110,15 @@ public class About_Main_Activity extends ActionBarActivity {
         String btString;
         //String bluetoothDeviceMacAddy = "20:14:12:17:10:69";  <<--hardcoded mac address, no longer necessary
         
+        
+        //i've even tried to hardcode macaddress of my HC-06 unit
+        String bluetoothDeviceMacAddy = "20:14:12:17:10:69";
+
+        // Root View for View Control
+        View rootView;
+        private static final String TAG = "dataServiceUpdate";
+        private Intent updateIntent;
+        
         //handler
         android.os.Handler mHandler = new android.os.Handler() {
             @Override
@@ -145,11 +164,14 @@ public class About_Main_Activity extends ActionBarActivity {
 
             rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
             init(); //initialize all components
+            
             updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
                     Data_Parser.getIsCharging());
             findAndConnectSSA();
             return rootView;
         }  // END PlaceholderFragment OnCreateView()
+
+            updateIntent = new Intent(rootView.getContext(), dataService.class);
 
         public void findAndConnectSSA() {
             /*
@@ -186,6 +208,13 @@ public class About_Main_Activity extends ActionBarActivity {
             return rootView;
         }  // END PlaceholderFragment OnCreateView()
 
+
+        private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent updateIntent){
+                updateUI(updateIntent);
+            }
+        };
 
 ||||||| merged common ancestors
 
@@ -314,16 +343,22 @@ public class About_Main_Activity extends ActionBarActivity {
                     mmSocket.close();
                 } catch (IOException e) { }
             }
-        }//END connectedthread
-
-
-
+        }
 
         @Override
         public void onResume() {
             super.onResume();
             updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
                     Data_Parser.getIsCharging());
+            getActivity().startService(updateIntent);
+            getActivity().registerReceiver(broadcastReceiver, new IntentFilter(dataService.DATA_SERVICE_ACTION));
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getActivity().unregisterReceiver(broadcastReceiver);
+            getActivity().stopService(updateIntent);
         }
 
         public void init(){
@@ -387,6 +422,16 @@ public class About_Main_Activity extends ActionBarActivity {
 
 
 >>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
+        private void updateUI(Intent updateIntent) {
+
+            boolean isChildInSeat = updateIntent.getBooleanExtra("ChildInSeat", false);
+            boolean isTemperatureThreshold = updateIntent.getBooleanExtra("TemperatureThreshold", false);
+            boolean isAlarmState = updateIntent.getBooleanExtra("AlarmState", false);
+            boolean isCharging = updateIntent.getBooleanExtra("Charging", false);
+
+            updateText(isChildInSeat, isTemperatureThreshold,isCharging);
+        }
+
     } // END AboutScreenFragment
 
     @Override
@@ -423,5 +468,19 @@ public class About_Main_Activity extends ActionBarActivity {
         }
     }
 
+//    private void updateUI(Intent updateIntent) {
+//        String isChildInSeat = updateIntent.getStringExtra("ChildInSeat");
+//        String isTemperatureThreshold = updateIntent.getStringExtra("TemperatureThreshold");
+//        String isAlarmState = updateIntent.getStringExtra("AlarmState");
+//        String isCharging = updateIntent.getStringExtra("Charging");
+//
+//        Log.d(TAG, isChildInSeat);
+//        Log.d(TAG, isTemperatureThreshold);
+//        Log.d(TAG, isAlarmState);
+//        Log.d(TAG, isCharging);
+//
+//        updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
+//                Data_Parser.getIsCharging());
+//    }
 
 } // END About_Main_Activity

@@ -2,35 +2,43 @@ package com.ridesafertechnologies.ssa;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.widget.Toast;
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- * +TODO: Customize class - update intent actions and extra parameters.
+ *
  */
 public class Data_Parser extends IntentService {
-//    // TODO: Rename actions, choose action names that describe tasks that this
-//    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-//    public static final String ACTION_FOO = "com.ridesafertechnologies.ssa.action.FOO";
-//    public static final String ACTION_BAZ = "com.ridesafertechnologies.ssa.action.BAZ";
-//
-//    // TODO: Rename parameters
-//    public static final String EXTRA_PARAM1 = "com.ridesafertechnologies.ssa.extra.PARAM1";
-//    public static final String EXTRA_PARAM2 = "com.ridesafertechnologies.ssa.extra.PARAM2";
+
+    //-------------------------------------FINAL VARIABLES----------------------------------------//
+    private static final int FORCE_INDEX = 0;
+    private static final int TEMP_INDEX = 1;
+    private static final int ALARM_INDEX = 2;
+    private static final int CHARGING_INDEX = 3;
+    private static final int STRING_PARTS_SIZE = 4;
+    private static final float HIGH_VALUE = 80;
+    private static final float LOW_VALUE = 50;
+    private static final float NO_VALUE = 0;
+
+
 
     //----------------------------------System Wide Variables-------------------------------------//
-    private static boolean isTempThresholdReached = false;
     private static boolean isChildInSeat = false;
+    private static boolean isTempThresholdReached = false;
+    private static boolean isAlarmState = false;
     private static boolean isCharging = false;
 
+
     //-----------------------------------------Getters--------------------------------------------//
+    public static boolean getIsChildInSeat() {
+        return isChildInSeat;
+    }
+
     public static boolean getIsTempThresholdReached() {
         return isTempThresholdReached;
     }
 
-    public static boolean getIsChildInSeat() {
-        return isChildInSeat;
+    public static boolean getIsAlarmState() {
+        return isAlarmState;
     }
 
     public static boolean getIsCharging() {
@@ -44,37 +52,42 @@ public class Data_Parser extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+        String communicationsData = Communications.getDataToken();
 
-//        if (intent != null) {
-//            final String action = intent.getAction();
-//            if (ACTION_FOO.equals(action)) {
-//                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-//                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-//                handleActionFoo(param1, param2);
-//            } else if (ACTION_BAZ.equals(action)) {
-//                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-//                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-//                handleActionBaz(param1, param2);
-//            }
-//        }
+        if(communicationsData.startsWith("#") && communicationsData.endsWith("~")) {
+            communicationsData = communicationsData.replaceAll("#", "");
+            communicationsData = communicationsData.replaceAll("~", "");
+            String[] dataParts = communicationsData.split("\\+");
 
+            if(dataParts.length == STRING_PARTS_SIZE) {
+                //Set ChildInSeat
+                isChildInSeat = setVariable(dataParts[FORCE_INDEX], FORCE_INDEX);
+                //Set Temperature Threshold
+                isTempThresholdReached = setVariable(dataParts[TEMP_INDEX], TEMP_INDEX);
+                //Set AlarmState
+                isAlarmState = setVariable(dataParts[ALARM_INDEX], ALARM_INDEX);
+                //Set Charging
+                isCharging = setVariable(dataParts[CHARGING_INDEX], CHARGING_INDEX);
+            } else {
+                Toast.makeText(getApplicationContext(), "The string wasn't long enough",
+                        Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "This string was invalid",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
-//    /**
-//     * Handle action Foo in the provided background thread with the provided
-//     * parameters.
-//     */
-//    private void handleActionFoo(String param1, String param2) {
-//        // TODO: Handle action Foo
-//        throw new UnsupportedOperationException("Not yet implemented");
-//    }
-//
-//    /**
-//     * Handle action Baz in the provided background thread with the provided
-//     * parameters.
-//     */
-//    private void handleActionBaz(String param1, String param2) {
-//        // TODO: Handle action Baz
-//        throw new UnsupportedOperationException("Not yet implemented");
-//    }
+    private boolean setVariable(String inString, int index) {
+        float temp = Float.parseFloat(inString);
+        if (index == TEMP_INDEX) {
+            if(temp > HIGH_VALUE || temp < LOW_VALUE)
+                return true;
+            else
+                return false;
+        } else if (temp != NO_VALUE)
+            return true;
+        else
+            return false;
+    }
 }
