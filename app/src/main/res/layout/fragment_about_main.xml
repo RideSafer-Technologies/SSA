@@ -229,6 +229,13 @@
             android:id="@+id/_Victoria"
             android:text="@string/_Victoria"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btTextView"
+            android:layout_below="@+id/_Victoria"
+            android:layout_centerHorizontal="true" />
+
     </RelativeLayout>
 
 </ScrollView>

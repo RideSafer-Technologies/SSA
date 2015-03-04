@@ -52,4 +52,5 @@
     this be turned on in order to function properly.</string>
     <string name="bluetooth_alert_positive">Open Settings</string>
     <string name="bluetooth_alert_negative">Cancel</string>
+    <string name="btString"> </string>
 </resources>
