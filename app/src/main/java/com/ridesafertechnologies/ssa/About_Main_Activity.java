@@ -32,11 +32,18 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ *
+ */
 public class About_Main_Activity extends ActionBarActivity {
 
     private static final int BLUETOOTH_ALERT = 10;
     public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_main);
@@ -48,24 +55,22 @@ public class About_Main_Activity extends ActionBarActivity {
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
     } // END About_Main_Activity onCreate
 
-//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent updateIntent){
-//            updateUI(updateIntent);
-//        }
-//    };
-
+    /**
+     *
+     */
     @Override
     protected void onResume() {
         super.onResume();
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!mBluetoothAdapter.isEnabled())
             showDialog(BLUETOOTH_ALERT);
-//        startService(updateIntent);
-//        registerReceiver(broadcastReceiver, new IntentFilter(dataService.DATA_SERVICE_ACTION));
     }
 
-
+    /**
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -73,6 +78,11 @@ public class About_Main_Activity extends ActionBarActivity {
         return true;
     } // END onCreateOptionsMenu()
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -95,21 +105,24 @@ public class About_Main_Activity extends ActionBarActivity {
     } // END onOptionsItemSelected()
 
     /**
-     * A placeholder fragment containing a simple view.
+     *
      */
     public static class AboutScreenFragment extends Fragment {
 
         private final int DK_GREEN_VAL_RED = 7;
         private final int DK_GREEN_VAL_GREEN = 145;
         private final int DK_GREEN_VAL_BLUE = 7;
-        BluetoothAdapter mBluetoothAdapter;
+        BluetoothAdapter mBluetoothAdapter = null;
+        BluetoothDevice mBluetoothDevice = null;
         protected static final int SUCCESS_CONNECT = 0;
         protected static final int MESSAGE_READ = 1;
         TextView bluetoothTextView;
         TextView childTextView;
         TextView temperatureTextView;
         TextView batteryTextView;
-        TextView btData;
+        static TextView btTextView;
+        String btString;
+        //String bluetoothDeviceMacAddy = "20:14:12:17:10:69";  <<--hardcoded mac address, no longer necessary
         
         
         //i've even tried to hardcode macaddress of my HC-06 unit
@@ -117,38 +130,42 @@ public class About_Main_Activity extends ActionBarActivity {
 
         // Root View for View Control
         View rootView;
+
         private static final String TAG = "dataServiceUpdate";
         private Intent updateIntent;
         
+        //handler
         android.os.Handler mHandler = new android.os.Handler() {
             @Override
             public void handleMessage(Message msg) {
-                // TODO Auto-generated method stub
                 super.handleMessage(msg);
-                switch(msg.what){
+                switch (msg.what) {
                     case SUCCESS_CONNECT:
-                        // WE ARE OFFICIALLY CONNECTED!!
                         //TODO do something here that pushes to parser
-
-                        ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket)msg.obj);
-                        Toast.makeText(getActivity(), "CONNECT", Toast.LENGTH_LONG).show();
-                        String s = "successfully connected";
-                        connectedThread.write(s.getBytes());
+                        ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
                         break;
                     case MESSAGE_READ:
-                        byte[] readBuf = (byte[])msg.obj;
-                        String string = new String(readBuf);
-                        btData.setText(string);
-                        Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+                        byte[] readBuf = (byte[]) msg.obj;
+                        btString = new String(readBuf);
+                        //populate a 'test' TextView with data pushed from Arduino
+                        //THIS IS NOT WORKING for some reason.
+                        btTextView.setText(btString);
+                        //Toast.makeText(getActivity(), btString, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
         };
 
-
         public AboutScreenFragment() {
         }
 
+        /**
+         *
+         * @param inflater
+         * @param container
+         * @param savedInstanceState
+         * @return
+         */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -159,33 +176,44 @@ public class About_Main_Activity extends ActionBarActivity {
             
             updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
                     Data_Parser.getIsCharging());
+            findAndConnectSSA();
 
             updateIntent = new Intent(rootView.getContext(), dataService.class);
 
+            return rootView;
+        }  // END PlaceholderFragment OnCreateView()
+
+
+
+        public void findAndConnectSSA() {
             /*
-             * I think the error in why it's not connecting lies in this code here.
-             * I've tried to make it so that it connects to a device who's address is exactly that
-             * of my HC-06 device..to no avail...will continue to work on this, but this is the
-             * closest i've gotten to a working unit.* * * *
+             * so far connectivity works ONLY if bluetooth is initially on.
              */
+            
+            /*
+             * Bluetooth related connectivity for hardcoded MAC address
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            connectDevice(bluetoothDeviceMacAddy);
+            ConnectThread newConnection = new ConnectThread(mBluetoothDevice);
+            newConnection.run();
+            */
+
+            //finds BT named "SSA" from list and connects to it
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
             // If there are paired devices
             if (pairedDevices.size() > 0) {
                 // Loop through paired devices
                 for (BluetoothDevice device : pairedDevices) {
                     // Add the name and address to an array adapter to show in a ListView
-                    if(device.getAddress() == bluetoothDeviceMacAddy){
-                        BluetoothDevice mBluetoothDevice = device; //this is redundant...maybe my call to create is just creating an instance of itself.
-                        ConnectThread mConnectThread;
-                        mConnectThread = new ConnectThread(mBluetoothDevice);
-                        mConnectThread.start();
+                    if (device.getName().equals("SSA")) {
+                        mBluetoothDevice = device;
+                        connectDevice(mBluetoothDevice.getAddress());
+                        ConnectThread newSSAConnection = new ConnectThread(mBluetoothDevice);
+                        newSSAConnection.run();
                     }
                 }
             }
-
-            return rootView;
-        }  // END PlaceholderFragment OnCreateView()
-
+        }
 
         private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -193,6 +221,21 @@ public class About_Main_Activity extends ActionBarActivity {
                 updateUI(updateIntent);
             }
         };
+
+        private void connectDevice(String address){
+            //Log.d(TAG, "connectDevice address: " + address);
+            
+            if (mBluetoothAdapter == null) {
+                bluetoothTextView.setText("Not a bluetooth device");
+            }            
+            mBluetoothDevice=mBluetoothAdapter.getRemoteDevice(address);
+            try {
+                mBluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
+            }
+            catch (  IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         private class ConnectThread extends Thread {
             private final BluetoothSocket mmSocket;
@@ -229,7 +272,7 @@ public class About_Main_Activity extends ActionBarActivity {
                 }
 
                 // Do work to manage the connection (in a separate thread)
-                manageConnectedSocket(mmSocket);
+                mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
             }
 
             private void manageConnectedSocket(BluetoothSocket mmSocket2){
@@ -320,7 +363,6 @@ public class About_Main_Activity extends ActionBarActivity {
             childTextView = (TextView) rootView.findViewById(R.id.is_child_in_seat);
             temperatureTextView = (TextView) rootView.findViewById(R.id.is_temperature_threshold);
             batteryTextView = (TextView) rootView.findViewById(R.id.is_battery_status);
-
         }
 
         public void updateText(boolean isChild, boolean isTemperature, boolean isBattery) {
@@ -377,7 +419,6 @@ public class About_Main_Activity extends ActionBarActivity {
 
             updateText(isChildInSeat, isTemperatureThreshold,isCharging);
         }
-
     } // END AboutScreenFragment
 
     @Override
@@ -395,7 +436,7 @@ public class About_Main_Activity extends ActionBarActivity {
                 bluetoothDialog.show();
         }
         return super.onCreateDialog(id);
-    }
+    } // END of Dialog
 
     private final class CancelOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialogInterface, int which) {
@@ -411,20 +452,4 @@ public class About_Main_Activity extends ActionBarActivity {
             startActivity(intentOpenBluetoothSettings);
         }
     }
-
-//    private void updateUI(Intent updateIntent) {
-//        String isChildInSeat = updateIntent.getStringExtra("ChildInSeat");
-//        String isTemperatureThreshold = updateIntent.getStringExtra("TemperatureThreshold");
-//        String isAlarmState = updateIntent.getStringExtra("AlarmState");
-//        String isCharging = updateIntent.getStringExtra("Charging");
-//
-//        Log.d(TAG, isChildInSeat);
-//        Log.d(TAG, isTemperatureThreshold);
-//        Log.d(TAG, isAlarmState);
-//        Log.d(TAG, isCharging);
-//
-//        updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
-//                Data_Parser.getIsCharging());
-//    }
-
 } // END About_Main_Activity
