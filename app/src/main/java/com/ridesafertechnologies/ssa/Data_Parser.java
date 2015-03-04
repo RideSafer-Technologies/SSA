@@ -15,6 +15,10 @@ public class Data_Parser extends IntentService {
     private static final int ALARM_INDEX = 2;
     private static final int CHARGING_INDEX = 3;
     private static final int STRING_PARTS_SIZE = 4;
+    private static final float HIGH_VALUE = 80;
+    private static final float LOW_VALUE = 50;
+    private static final float NO_VALUE = 0;
+
 
 
     //----------------------------------System Wide Variables-------------------------------------//
@@ -33,7 +37,9 @@ public class Data_Parser extends IntentService {
         return isTempThresholdReached;
     }
 
-    public static boolean getIsAlarmState() { return isAlarmState; }
+    public static boolean getIsAlarmState() {
+        return isAlarmState;
+    }
 
     public static boolean getIsCharging() {
         return isCharging;
@@ -55,13 +61,13 @@ public class Data_Parser extends IntentService {
 
             if(dataParts.length == STRING_PARTS_SIZE) {
                 //Set ChildInSeat
-                isChildInSeat = setVariable(dataParts[FORCE_INDEX]);
+                isChildInSeat = setVariable(dataParts[FORCE_INDEX], FORCE_INDEX);
                 //Set Temperature Threshold
-                isTempThresholdReached = setVariable(dataParts[TEMP_INDEX]);
+                isTempThresholdReached = setVariable(dataParts[TEMP_INDEX], TEMP_INDEX);
                 //Set AlarmState
-                isAlarmState = setVariable(dataParts[ALARM_INDEX]);
+                isAlarmState = setVariable(dataParts[ALARM_INDEX], ALARM_INDEX);
                 //Set Charging
-                isCharging = setVariable(dataParts[CHARGING_INDEX]);
+                isCharging = setVariable(dataParts[CHARGING_INDEX], CHARGING_INDEX);
             } else {
                 Toast.makeText(getApplicationContext(), "The string wasn't long enough",
                         Toast.LENGTH_LONG).show();
@@ -72,11 +78,16 @@ public class Data_Parser extends IntentService {
         }
     }
 
-    private boolean setVariable(String inString) {
+    private boolean setVariable(String inString, int index) {
         float temp = Float.parseFloat(inString);
-        if (temp == 0.0)
-            return false;
-        else
+        if (index == TEMP_INDEX) {
+            if(temp > HIGH_VALUE || temp < LOW_VALUE)
+                return true;
+            else
+                return false;
+        } else if (temp != NO_VALUE)
             return true;
+        else
+            return false;
     }
 }

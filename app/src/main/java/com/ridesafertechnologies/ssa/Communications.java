@@ -15,7 +15,7 @@ import android.widget.Toast;
  */
 public class Communications extends IntentService {
 
-    private static String dataToken = "#500.2+72.36+1+0+~";
+    private static String dataToken = "#500.2+90.23+1+0+~";
 
     public static String getDataToken() {
         return dataToken;
