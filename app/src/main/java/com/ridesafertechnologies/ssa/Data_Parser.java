@@ -52,6 +52,8 @@ public class Data_Parser extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+        testData();
+
         String communicationsData = About_Main_Activity.AboutScreenFragment.getBtString();
 
         if(communicationsData.startsWith("#") && communicationsData.endsWith("~")) {
@@ -90,4 +92,34 @@ public class Data_Parser extends IntentService {
         else
             return false;
     }
+
+    private static int num = 0;
+
+    private void testData() {
+        final String str1 = "#0+0+0+0+~";
+        final String str2 = "#500+75+1+1+~";
+        final String str3 = "#0+0+0+0+~";
+        final String str4 = "#456+0+1+1+~";
+
+        switch (num) {
+            case 0:
+                About_Main_Activity.AboutScreenFragment.setBtString(str1);
+                break;
+            case 1:
+                About_Main_Activity.AboutScreenFragment.setBtString(str2);
+                break;
+            case 2:
+                About_Main_Activity.AboutScreenFragment.setBtString(str3);
+                break;
+            case 3:
+                About_Main_Activity.AboutScreenFragment.setBtString(str4);
+                break;
+        }
+
+        if(num > 3)
+            num = 0;
+        else
+            num++;
+    }
+
 }

@@ -134,6 +134,7 @@ public class About_Main_Activity extends ActionBarActivity {
         private static String btString = DEFAULT_DATA_TOKEN;
 
         public static String getBtString() { return btString; }
+        public static void setBtString(String in) { btString = in; }
 
         //i've even tried to hardcode macaddress of my HC-06 unit
         String bluetoothDeviceMacAddy = "20:14:12:17:10:69";
