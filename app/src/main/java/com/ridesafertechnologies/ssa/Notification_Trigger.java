@@ -4,6 +4,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 
 /**
@@ -13,6 +16,7 @@ import android.preference.PreferenceManager;
  * TODO: Customize class - update intent actions and extra parameters.
  */
 public class Notification_Trigger extends IntentService {
+
     private boolean child;
     private boolean temp;
     private boolean charging;
@@ -42,6 +46,7 @@ public class Notification_Trigger extends IntentService {
                 }
                 updateData();
             }
+            Toast.makeText(getApplicationContext(), " Your child was removed \n from the car seat", LENGTH_LONG).show();
             killAlarm();
 
         }
@@ -94,7 +99,7 @@ public class Notification_Trigger extends IntentService {
         }
         else if(alarmType == 2){
             //run code toast notification
-
+            Toast.makeText(getApplicationContext(), "Stop Your Child is in the Car!", Toast.LENGTH_LONG).show();
         }
         else{
             //if the alarm type is an invalid setting, set to full screen.
@@ -126,6 +131,8 @@ public class Notification_Trigger extends IntentService {
         setCharging(Data_Parser.getIsCharging());
         //setConnection(Communications.???insertGetFunction);
     }
+    // Dialog Alert Code will be here
+
 
     /**
      * Handle action Foo in the provided background thread with the provided
