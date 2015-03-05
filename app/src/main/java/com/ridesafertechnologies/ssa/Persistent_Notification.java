@@ -1,5 +1,6 @@
 package com.ridesafertechnologies.ssa;
 
+
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -9,46 +10,40 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
-
 /**
- * Helper class for showing and canceling persistent
- * notifications.
- * <p/>
- * This class makes heavy use of the {@link NotificationCompat.Builder} helper
- * class to create notifications in a backward-compatible way.
- */
+* Helper class for showing and canceling persistent
+* notifications.
+* <p/>
+* This class makes heavy use of the {@link NotificationCompat.Builder} helper
+* class to create notifications in a backward-compatible way.
+*/
 public class Persistent_Notification {
     /**
      * The unique identifier for this type of notification.
      */
     private static final String NOTIFICATION_TAG = "Persistent_";
+    private static final String SUMMARY_TEXT = "By closing this you understand that the SSA " +
+            "system will no longer be monitoring your child's car seat.";
 
     /**
-     * Shows the notification, or updates a previously shown notification of
-     * this type, with the given parameters.
-     * <p/>
-     * TODO: Customize this method's arguments to present relevant content in
-     * the notification.
-     * <p/>
-     * TODO: Customize the contents of this method to tweak the behavior and
-     * presentation of persistent  notifications. Make
-     * sure to follow the
-     * <a href="https://developer.android.com/design/patterns/notifications.html">
-     * Notification design guidelines</a> when doing so.
      *
-     * @see #cancel(Context)
+     * @param context
+     * @param exampleString
+     * @param number
      */
     public static void notify(final Context context,
                               final String exampleString, final int number) {
+        Intent notificationIntent = new Intent(context, About_Main_Activity.class);
+
         final Resources res = context.getResources();
 
         // This image is used as the notification's large icon (thumbnail).
         // TODO: Remove this if your notification has no relevant thumbnail.
-        final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.example_picture);
+        final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.ic_launcher);
+
 
 
         final String ticker = exampleString;
@@ -82,57 +77,24 @@ public class Persistent_Notification {
                         // Set ticker text (preview) information for this notification.
                 .setTicker(ticker)
 
-                        // Show a number. This is useful when stacking notifications of
-                        // a single type.
                 .setNumber(number)
 
-                        // If this notification relates to a past or upcoming event, you
-                        // should set the relevant time information using the setWhen
-                        // method below. If this call is omitted, the notification's
-                        // timestamp will by set to the time at which it was shown.
-                        // TODO: Call setWhen if this notification relates to a past or
-                        // upcoming event. The sole argument to this method should be
-                        // the notification timestamp in milliseconds.
-                        //.setWhen(...)
-
-                        // Set the pending intent to be initiated when the user touches
-                        // the notification.
                 .setContentIntent(
                         PendingIntent.getActivity(
                                 context,
                                 0,
-                                new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com")),
-                                PendingIntent.FLAG_UPDATE_CURRENT))
+                                notificationIntent,
+                                0
+                        ))
 
                         // Show expanded text content on devices running Android 4.1 or
                         // later.
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(text)
                         .setBigContentTitle(title)
-                        .setSummaryText("Dummy summary text"))
+                        .setSummaryText(SUMMARY_TEXT))
 
-                        // Example additional actions for this notification. These will
-                        // only show on devices running Android 4.1 or later, so you
-                        // should ensure that the activity in this notification's
-                        // content intent provides access to the same actions in
-                        // another way.
-                .addAction(
-                        R.drawable.ic_action_stat_share,
-                        res.getString(R.string.action_share),
-                        PendingIntent.getActivity(
-                                context,
-                                0,
-                                Intent.createChooser(new Intent(Intent.ACTION_SEND)
-                                        .setType("text/plain")
-                                        .putExtra(Intent.EXTRA_TEXT, "Dummy text"), "Dummy title"),
-                                PendingIntent.FLAG_UPDATE_CURRENT))
-                .addAction(
-                        R.drawable.ic_action_stat_reply,
-                        res.getString(R.string.action_reply),
-                        null)
-
-                        // Automatically dismiss the notification when it is touched.
-                .setAutoCancel(true);
+                        .setAutoCancel(false);
 
         notify(context, builder.build());
     }
@@ -141,6 +103,8 @@ public class Persistent_Notification {
     private static void notify(final Context context, final Notification notification) {
         final NotificationManager nm = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
+//        findAndConnectSSA();
+        notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
             nm.notify(NOTIFICATION_TAG, 0, notification);
         } else {

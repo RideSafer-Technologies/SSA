@@ -31,11 +31,12 @@
     <string name="_Ryan" translatable="false">Ryan Mainard</string>
     <string name="_Victoria" translatable="false">Victoria Cizevska</string>
     <string name="new_message_notification_title_template">New message: %1$s</string>
-    <string name="new_message_notification_placeholder_text_template">You said %1$s and lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis. Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec tortor.</string>
+    <string name="new_message_notification_placeholder_text_template"> Lorem ipsum</string>
     <string name="action_share">Share</string>
     <string name="action_reply">Reply</string>
+    <string name="action_close">Close</string>
     <string name="persistent__notification_title_template">"Persistent ": %1$s</string>
-    <string name="persistent__notification_placeholder_text_template">You said %1$s and lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam non enim magna. Morbi dictum, velit vel semper venenatis, magna odio volutpat velit, at ullamcorper nulla lacus sed turpis. Pellentesque vitae metus elit, nec tincidunt tellus. Integer sed nisl sem, ullamcorper ornare lacus. Duis ac mauris sed massa congue volutpat. Donec sed erat sit amet turpis viverra rhoncus sit amet nec magna. Donec lacinia ligula at libero volutpat volutpat nec nec tortor.</string>
+    <string name="persistent__notification_placeholder_text_template">This will keep the SSA Application running so you don\'t forget your child.</string>
     // URL        <string name="fileURL">file:///android_asset/UserManual.html</string>
     // Alerts and Notifications        <string name="bluetooth_alert_title">Bluetooth Verification</string>
     <string name="bluetooth_alert_message">The Bluetooth is turned off. The SSA App requires that

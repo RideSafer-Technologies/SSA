@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Message;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,61 +22,111 @@ import java.util.UUID;
  */
 public class Communications extends IntentService {
 
-    Intent dataParserIntent;
+    // Intents to handle IntentServices
+    private Intent dataParserIntent;
 
+    // Constant static variables to reduce "Hard-Coding"
+    private static final String DEFAULT_DATA_TOKEN = "#0+74.56+0+0+~";
+    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    protected static final int SUCCESS_CONNECT = 0;
+    protected static final int MESSAGE_READ = 1;
+
+    // Bluetooth controls
+    private BluetoothAdapter mBluetoothAdapter = null;
+    private BluetoothDevice mBluetoothDevice = null;
+
+    private static String dataToken = DEFAULT_DATA_TOKEN;
+
+    /**
+     * Default constructor for Communications IntentService
+     */
     public Communications() {
         super("Communications");
     }
 
-    private static final String DEFAULT_DATA_TOKEN = "#0+74.56+0+0+~";
-    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-    BluetoothAdapter mBluetoothAdapter = null;
-    BluetoothDevice mBluetoothDevice = null;
-
-    //i've even tried to hardcode macaddress of my HC-06 unit
-    String bluetoothDeviceMacAddy = "20:14:12:17:10:69";
-
-    private static String dataToken = DEFAULT_DATA_TOKEN;
-
-    protected static final int SUCCESS_CONNECT = 0;
-    protected static final int MESSAGE_READ = 1;
-
+    /**
+     *
+     * @return
+     */
     public static String getDataToken() {
         return dataToken;
     }
 
+    /**
+     *
+     */
+    public static void setDataToken(String inDataToken) {
+        dataToken = inDataToken;
+    }
+
+
+    /**
+     *
+     */
     @Override
     public void onCreate() {
         dataParserIntent = new Intent(this, Data_Parser.class);
-    }
+        }
 
+    /**
+     *
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        findAndConnectSSA();
         return Service.START_STICKY;
     }
 
+    /**
+     *
+     * @param intent
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
+        Toast.makeText(getApplicationContext(), "Test onHandleIntent", Toast.LENGTH_LONG).show();
 
-        findAndConnectSSA();
+
+
     }
 
+    /**
+     *
+     * @param intent
+     * @return
+     */
     @Override
     public IBinder onBind(Intent intent) {
+
+        Toast.makeText(getApplicationContext(), "Test onBind", Toast.LENGTH_LONG).show();
+
         return null;
     }
 
+    /**
+     *
+     */
     @Override
     public void onDestroy() {
 
+        Toast.makeText(getApplicationContext(), "Test onDestroy", Toast.LENGTH_LONG).show();
+
+
     }
 
-    //handler
-     android.os.Handler mHandler = new android.os.Handler() {
+    /**
+     *
+     */
+      android.os.Handler mHandler = new android.os.Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
+            Toast.makeText(getApplicationContext(), "Test mHandler", Toast.LENGTH_LONG).show();
+
             switch (msg.what) {
                 case SUCCESS_CONNECT:
                     //TODO do something here that pushes to parser
@@ -94,7 +145,13 @@ public class Communications extends IntentService {
         }
     };
 
+    /**
+     *
+     */
     public void findAndConnectSSA() {
+
+        Toast.makeText(getApplicationContext(), "Test findAndConnectSSA", Toast.LENGTH_LONG).show();
+
             /*
              * so far connectivity works ONLY if bluetooth is initially on.
              */
@@ -107,6 +164,7 @@ public class Communications extends IntentService {
             newConnection.run();
             */
 
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //finds BT named "SSA" from list and connects to it
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         // If there are paired devices
@@ -124,8 +182,14 @@ public class Communications extends IntentService {
         }
     }
 
+    /**
+     *
+     * @param address
+     */
     private void connectDevice(String address){
         //Log.d(TAG, "connectDevice address: " + address);
+        Toast.makeText(getApplicationContext(), "Test connectDevice", Toast.LENGTH_LONG).show();
+
 
         if (mBluetoothAdapter == null) {
             //bluetoothTextView.setText("Not a bluetooth device");
@@ -139,11 +203,18 @@ public class Communications extends IntentService {
         }
     }
 
+    /**
+     *
+     */
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
 
         public ConnectThread(BluetoothDevice device) {
+
+
+            Toast.makeText(getApplicationContext(), "Test ConnectThread Constructor", Toast.LENGTH_LONG).show();
+
             // Use a temporary object that is later assigned to mmSocket,
             // because mmSocket is final
             BluetoothSocket tmp = null;
@@ -157,7 +228,13 @@ public class Communications extends IntentService {
             mmSocket = tmp;
         }
 
+        /**
+         *
+         */
         public void run() {
+
+            Toast.makeText(getApplicationContext(), "Test ConnectThread run", Toast.LENGTH_LONG).show();
+
             // Cancel discovery because it will slow down the connection
             mBluetoothAdapter.cancelDiscovery();
 
@@ -177,24 +254,44 @@ public class Communications extends IntentService {
             mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
         }
 
+        /**
+         *
+         * @param mmSocket2
+         */
         private void manageConnectedSocket(BluetoothSocket mmSocket2){
             //intentionally left blank
         }
+
+        /**
+         *
+         */
         // Will cancel an in-progress connection, and close the socket
         public void cancel() {
+
+            Toast.makeText(getApplicationContext(), "Test ConnectThread cancel", Toast.LENGTH_LONG).show();
+
             try {
                 mmSocket.close();
             } catch (IOException e) { }
         }
     }
 
+    /**
+     *
+     */
     private class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
-
+        /**
+         *
+         * @param socket
+         */
         public ConnectedThread(BluetoothSocket socket) {
+
+            Toast.makeText(getApplicationContext(), "Test ConnectedThread Constructor", Toast.LENGTH_LONG).show();
+
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -210,7 +307,13 @@ public class Communications extends IntentService {
             mmOutStream = tmpOut;
         }
 
+        /**
+         *
+         */
         public void run() {
+
+            Toast.makeText(getApplicationContext(), "Test connectedThread run", Toast.LENGTH_LONG).show();
+
             byte[] buffer = new byte[1024];  // buffer store for the stream
             int bytes; // bytes returned from read()
 
@@ -228,15 +331,28 @@ public class Communications extends IntentService {
             }
         }
 
+        /**
+         *
+         * @param bytes
+         */
         /* Call this from the main activity to send data to the remote device */
         public void write(byte[] bytes) {
+
+            Toast.makeText(getApplicationContext(), "Test ConnectedThread write", Toast.LENGTH_LONG).show();
+
             try {
                 mmOutStream.write(bytes);
             } catch (IOException e) { }
         }
 
+        /**
+         *
+         */
         /* Call this from the main activity to shutdown the connection */
         public void cancel() {
+
+            Toast.makeText(getApplicationContext(), "Test ConnectedThread cancel", Toast.LENGTH_LONG).show();
+
             try {
                 mmSocket.close();
             } catch (IOException e) { }
