@@ -3,6 +3,7 @@ package com.ridesafertechnologies.ssa;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
@@ -16,7 +17,7 @@ import static android.widget.Toast.LENGTH_LONG;
  * TODO: Customize class - update intent actions and extra parameters.
  */
 public class Notification_Trigger extends IntentService {
-
+    private MediaPlayer mediaPlayer = new MediaPlayer();
     private boolean child;
     private boolean temp;
     private boolean charging;
@@ -100,6 +101,9 @@ public class Notification_Trigger extends IntentService {
         else if(alarmType == 2){
             //run code toast notification
             Toast.makeText(getApplicationContext(), "Stop Your Child is in the Car!", Toast.LENGTH_LONG).show();
+            mediaPlayer = MediaPlayer.create(this,R.raw.tornadosireniidelilah747233690 );
+            mediaPlayer.start();
+
         }
         else{
             //if the alarm type is an invalid setting, set to full screen.
@@ -121,7 +125,8 @@ public class Notification_Trigger extends IntentService {
             //kill dialog alarm
         }
         else if(alarmType ==2){
-            //kill toast alarm
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
         alarmTrig = false;
     }

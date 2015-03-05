@@ -67,6 +67,12 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:theme="@android:style/Theme.Dialog"
+            android:name=".util.SSA_Dialog_Alert"
+            android:label="@string/title_activity_ssa__dialog__alert" >
+        </activity>
     </application>
 
 </manifest>
