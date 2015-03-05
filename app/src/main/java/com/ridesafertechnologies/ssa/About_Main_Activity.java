@@ -38,7 +38,7 @@ import java.util.UUID;
 public class About_Main_Activity extends ActionBarActivity {
 
     private static final int BLUETOOTH_ALERT = 10;
-    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+//    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     Intent communicationsIntent;
     Intent dataParserIntent;
 
@@ -47,6 +47,8 @@ public class About_Main_Activity extends ActionBarActivity {
      * @param savedInstanceState
      */
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Set the content for the Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_main);
         if (savedInstanceState == null) {
@@ -54,13 +56,15 @@ public class About_Main_Activity extends ActionBarActivity {
                     .add(R.id.container, new AboutScreenFragment())
                     .commit();
         }
+        // Initialize Preference Manager
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
+        // Initialize Intents
         communicationsIntent = new Intent(this, Communications.class);
         dataParserIntent = new Intent(this, Data_Parser.class);
 
         // Start the Communications class background Service
-       //startService(communicationsIntent);
+        startService(communicationsIntent);
     } // END About_Main_Activity onCreate
 
     /**
@@ -72,7 +76,7 @@ public class About_Main_Activity extends ActionBarActivity {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!mBluetoothAdapter.isEnabled())
             showDialog(BLUETOOTH_ALERT);
-    }
+    } // END About_Main_Activity onResume
 
     /**
      *
@@ -158,9 +162,10 @@ public class About_Main_Activity extends ActionBarActivity {
                     case MESSAGE_READ:
                         byte[] readBuf = (byte[]) msg.obj;
                         btString = new String(readBuf);
+                        Toast.makeText(rootView.getContext(), btString, Toast.LENGTH_LONG).show();
                         //populate a 'test' TextView with data pushed from Arduino
                         //THIS IS NOT WORKING for some reason.
-                        btTextView.setText(btString);
+                        //btTextView.setText(btString);
                         //Toast.makeText(getActivity(), btString, Toast.LENGTH_SHORT).show();
                         break;
                 }
@@ -264,25 +269,27 @@ public class About_Main_Activity extends ActionBarActivity {
                 mmSocket = tmp;
             }
 
-            public void run() {
-                // Cancel discovery because it will slow down the connection
-                mBluetoothAdapter.cancelDiscovery();
 
-                try {
-                    // Connect the device through the socket. This will block
-                    // until it succeeds or throws an exception
-                    mmSocket.connect();
-                } catch (IOException connectException) {
-                    // Unable to connect; close the socket and get out
+                public void run() {
+                    // Cancel discovery because it will slow down the connection
+                    mBluetoothAdapter.cancelDiscovery();
+
                     try {
-                        mmSocket.close();
-                    } catch (IOException closeException) { }
-                    return;
+                        // Connect the device through the socket. This will block
+                        // until it succeeds or throws an exception
+                        mmSocket.connect();
+                    } catch (IOException connectException) {
+                        // Unable to connect; close the socket and get out
+                        try {
+                            mmSocket.close();
+                        } catch (IOException closeException) { }
+                        return;
+                    }
+
+                    // Do work to manage the connection (in a separate thread)
+                    mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
                 }
 
-                // Do work to manage the connection (in a separate thread)
-                mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
-            }
 
             private void manageConnectedSocket(BluetoothSocket mmSocket2){
                 //intentionally left blank
@@ -317,24 +324,26 @@ public class About_Main_Activity extends ActionBarActivity {
                 mmOutStream = tmpOut;
             }
 
-            public void run() {
-                byte[] buffer = new byte[1024];  // buffer store for the stream
-                int bytes; // bytes returned from read()
+            private Runnable bluetoothRun = new Runnable() {
+                @Override
+                public void run() {
+                    byte[] buffer = new byte[1024];  // buffer store for the stream
+                    int bytes; // bytes returned from read()
 
-                // Keep listening to the InputStream until an exception occurs
-                while (true) {
-                    try {
-                        // Read from the InputStream
-                        bytes = mmInStream.read(buffer);
-                        // Send the obtained bytes to the UI activity
-                        mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                                .sendToTarget();
-                    } catch (IOException e) {
-                        break;
+                    // Keep listening to the InputStream until an exception occurs
+                    while (true) {
+                        try {
+                            // Read from the InputStream
+                            bytes = mmInStream.read(buffer);
+                            // Send the obtained bytes to the UI activity
+                            mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                                    .sendToTarget();
+                        } catch (IOException e) {
+                            break;
+                        }
                     }
                 }
-            }
-
+            };
             /* Call this from the main activity to send data to the remote device */
             public void write(byte[] bytes) {
                 try {
