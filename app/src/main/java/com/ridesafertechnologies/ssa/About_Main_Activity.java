@@ -39,6 +39,8 @@ public class About_Main_Activity extends ActionBarActivity {
 
     private static final int BLUETOOTH_ALERT = 10;
     public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    Intent communicationsIntent;
+    Intent dataParserIntent;
 
     /**
      *
@@ -53,6 +55,12 @@ public class About_Main_Activity extends ActionBarActivity {
                     .commit();
         }
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+
+        communicationsIntent = new Intent(this, Communications.class);
+        dataParserIntent = new Intent(this, Data_Parser.class);
+
+        // Start the Communications class background Service
+       //startService(communicationsIntent);
     } // END About_Main_Activity onCreate
 
     /**
@@ -112,19 +120,21 @@ public class About_Main_Activity extends ActionBarActivity {
         private final int DK_GREEN_VAL_RED = 7;
         private final int DK_GREEN_VAL_GREEN = 145;
         private final int DK_GREEN_VAL_BLUE = 7;
-        BluetoothAdapter mBluetoothAdapter = null;
-        BluetoothDevice mBluetoothDevice = null;
         protected static final int SUCCESS_CONNECT = 0;
         protected static final int MESSAGE_READ = 1;
+
+        BluetoothAdapter mBluetoothAdapter = null;
+        BluetoothDevice mBluetoothDevice = null;
         TextView bluetoothTextView;
         TextView childTextView;
         TextView temperatureTextView;
         TextView batteryTextView;
         static TextView btTextView;
-        String btString;
-        //String bluetoothDeviceMacAddy = "20:14:12:17:10:69";  <<--hardcoded mac address, no longer necessary
-        
-        
+        private static final String DEFAULT_DATA_TOKEN = "#0+74.56+0+0+~";
+        private static String btString = DEFAULT_DATA_TOKEN;
+
+        public static String getBtString() { return btString; }
+
         //i've even tried to hardcode macaddress of my HC-06 unit
         String bluetoothDeviceMacAddy = "20:14:12:17:10:69";
 
@@ -169,15 +179,13 @@ public class About_Main_Activity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            // Create a root view to connect to the outer class
             rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
 
-            rootView = inflater.inflate(R.layout.fragment_about_main, container, false);
             init(); //initialize all components
-            
-            updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
-                    Data_Parser.getIsCharging());
-            findAndConnectSSA();
 
+            // Update the screen information
+            findAndConnectSSA();
             updateIntent = new Intent(rootView.getContext(), dataService.class);
 
             return rootView;
@@ -189,7 +197,7 @@ public class About_Main_Activity extends ActionBarActivity {
             /*
              * so far connectivity works ONLY if bluetooth is initially on.
              */
-            
+
             /*
              * Bluetooth related connectivity for hardcoded MAC address
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -224,10 +232,10 @@ public class About_Main_Activity extends ActionBarActivity {
 
         private void connectDevice(String address){
             //Log.d(TAG, "connectDevice address: " + address);
-            
+
             if (mBluetoothAdapter == null) {
                 bluetoothTextView.setText("Not a bluetooth device");
-            }            
+            }
             mBluetoothDevice=mBluetoothAdapter.getRemoteDevice(address);
             try {
                 mBluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
@@ -278,7 +286,7 @@ public class About_Main_Activity extends ActionBarActivity {
             private void manageConnectedSocket(BluetoothSocket mmSocket2){
                 //intentionally left blank
             }
-            // Will cancel an in-progress connection, and close the socket 
+            // Will cancel an in-progress connection, and close the socket
             public void cancel() {
                 try {
                     mmSocket.close();

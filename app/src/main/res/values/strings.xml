@@ -42,16 +42,12 @@
     this be turned on in order to function properly.</string>
     <string name="bluetooth_alert_positive">Open Settings</string>
     <string name="bluetooth_alert_negative">Cancel</string>
-<<<<<<< HEAD
+
     <string name="Dismiss">Dismiss</string>
     <string name="Snooze">Snooze</string>
     <string name="Full_Screen_White">Full_Screen_White</string>
     <string name="Full_Screen_Black">Full_Screen_Black</string>
     <string name="title_activity_full__screen__alarm">Full_Screen_Alarm</string>
     <string name="hello_world">Hello world!</string>
-
-||||||| merged common ancestors
-=======
     <string name="btString"> </string>
->>>>>>> 82e68bca6dac945e1393fab3fdb0d3e48040c6c1
 </resources>

@@ -2,82 +2,244 @@ package com.ridesafertechnologies.ssa;
 
 import android.app.IntentService;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.os.Message;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.UUID;
 
 
 /**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- * TODO: Customize class - update intent actions and extra parameters.
+ *
  */
 public class Communications extends IntentService {
 
-    private static String dataToken = "#500.2+90.23+1+0+~";
+    Intent dataParserIntent;
+
+    public Communications() {
+        super("Communications");
+    }
+
+    private static final String DEFAULT_DATA_TOKEN = "#0+74.56+0+0+~";
+    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    BluetoothAdapter mBluetoothAdapter = null;
+    BluetoothDevice mBluetoothDevice = null;
+
+    //i've even tried to hardcode macaddress of my HC-06 unit
+    String bluetoothDeviceMacAddy = "20:14:12:17:10:69";
+
+    private static String dataToken = DEFAULT_DATA_TOKEN;
+
+    protected static final int SUCCESS_CONNECT = 0;
+    protected static final int MESSAGE_READ = 1;
 
     public static String getDataToken() {
         return dataToken;
     }
 
     @Override
+    public void onCreate() {
+        dataParserIntent = new Intent(this, Data_Parser.class);
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // TODO: Do something Useful
         return Service.START_STICKY;
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: For Communication return IBinder implementation
-        return null;
-    }
+    protected void onHandleIntent(Intent intent) {
 
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    public static final String ACTION_FOO = "com.ridesafertechnologies.ssa.action.FOO";
-    public static final String ACTION_BAZ = "com.ridesafertechnologies.ssa.action.BAZ";
-
-    // TODO: Rename parameters
-    public static final String EXTRA_PARAM1 = "com.ridesafertechnologies.ssa.extra.PARAM1";
-    public static final String EXTRA_PARAM2 = "com.ridesafertechnologies.ssa.extra.PARAM2";
-
-    public Communications() {
-        super("Communications");
+        findAndConnectSSA();
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            Toast.makeText(getApplicationContext(), "Comms Service STARTED", Toast.LENGTH_LONG).show();
-            final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
+
+    //handler
+     android.os.Handler mHandler = new android.os.Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case SUCCESS_CONNECT:
+                    //TODO do something here that pushes to parser
+                    ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
+                    break;
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    dataToken = new String(readBuf);
+                    startService(dataParserIntent);
+                    //populate a 'test' TextView with data pushed from Arduino
+                    //THIS IS NOT WORKING for some reason.
+                    //btTextView.setText(btString);
+                    //Toast.makeText(getActivity(), btString, Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    public void findAndConnectSSA() {
+            /*
+             * so far connectivity works ONLY if bluetooth is initially on.
+             */
+
+            /*
+             * Bluetooth related connectivity for hardcoded MAC address
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            connectDevice(bluetoothDeviceMacAddy);
+            ConnectThread newConnection = new ConnectThread(mBluetoothDevice);
+            newConnection.run();
+            */
+
+        //finds BT named "SSA" from list and connects to it
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        // If there are paired devices
+        if (pairedDevices.size() > 0) {
+            // Loop through paired devices
+            for (BluetoothDevice device : pairedDevices) {
+                // Add the name and address to an array adapter to show in a ListView
+                if (device.getName().equals("SSA")) {
+                    mBluetoothDevice = device;
+                    connectDevice(mBluetoothDevice.getAddress());
+                    ConnectThread newSSAConnection = new ConnectThread(mBluetoothDevice);
+                    newSSAConnection.run();
+                }
             }
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void connectDevice(String address){
+        //Log.d(TAG, "connectDevice address: " + address);
+
+        if (mBluetoothAdapter == null) {
+            //bluetoothTextView.setText("Not a bluetooth device");
+        }
+        mBluetoothDevice=mBluetoothAdapter.getRemoteDevice(address);
+        try {
+            mBluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
+        }
+        catch (  IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private class ConnectThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final BluetoothDevice mmDevice;
+
+        public ConnectThread(BluetoothDevice device) {
+            // Use a temporary object that is later assigned to mmSocket,
+            // because mmSocket is final
+            BluetoothSocket tmp = null;
+            mmDevice = device;
+
+            // Get a BluetoothSocket to connect with the given BluetoothDevice
+            try {
+                // MY_UUID is the app's UUID string, also used by the server code
+                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+            } catch (IOException e) { }
+            mmSocket = tmp;
+        }
+
+        public void run() {
+            // Cancel discovery because it will slow down the connection
+            mBluetoothAdapter.cancelDiscovery();
+
+            try {
+                // Connect the device through the socket. This will block
+                // until it succeeds or throws an exception
+                mmSocket.connect();
+            } catch (IOException connectException) {
+                // Unable to connect; close the socket and get out
+                try {
+                    mmSocket.close();
+                } catch (IOException closeException) { }
+                return;
+            }
+
+            // Do work to manage the connection (in a separate thread)
+            mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
+        }
+
+        private void manageConnectedSocket(BluetoothSocket mmSocket2){
+            //intentionally left blank
+        }
+        // Will cancel an in-progress connection, and close the socket
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) { }
+        }
+    }
+
+    private class ConnectedThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+
+        public ConnectedThread(BluetoothSocket socket) {
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams, using temp objects because
+            // member streams are final
+            try {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) { }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run() {
+            byte[] buffer = new byte[1024];  // buffer store for the stream
+            int bytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    bytes = mmInStream.read(buffer);
+                    // Send the obtained bytes to the UI activity
+                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget();
+                } catch (IOException e) {
+                    break;
+                }
+            }
+        }
+
+        /* Call this from the main activity to send data to the remote device */
+        public void write(byte[] bytes) {
+            try {
+                mmOutStream.write(bytes);
+            } catch (IOException e) { }
+        }
+
+        /* Call this from the main activity to shutdown the connection */
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) { }
+        }
     }
 }

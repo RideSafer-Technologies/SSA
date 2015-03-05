@@ -37,6 +37,7 @@ public class dataService extends Service {
 
     private Runnable sendUpdatesToUI = new Runnable() {
         public void run() {
+            startService(parserIntent);
             DisplayLoggingInfo();
             handler.postDelayed(this, TIMED_DELAY_HALF);
         }

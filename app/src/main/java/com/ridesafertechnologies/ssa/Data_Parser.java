@@ -52,7 +52,7 @@ public class Data_Parser extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String communicationsData = Communications.getDataToken();
+        String communicationsData = About_Main_Activity.AboutScreenFragment.getBtString();
 
         if(communicationsData.startsWith("#") && communicationsData.endsWith("~")) {
             communicationsData = communicationsData.replaceAll("#", "");
