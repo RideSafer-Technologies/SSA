@@ -135,7 +135,7 @@ public class Communications extends IntentService {
                     Toast.makeText(getApplicationContext(), "Case " + MESSAGE_READ + " running", Toast.LENGTH_LONG).show();
                     byte[] readBuf = (byte[]) msg.obj;
                     for(int i = 0; i < readBuf.length; i++)
-                        Toast.makeText(getApplicationContext(), "readBuf " + i + ": " + readBuf[i], Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "readBuf " + i + ": " + readBuf[i], Toast.LENGTH_SHORT).show();
                     dataToken = new String(readBuf);
                        Toast.makeText(getApplicationContext(), "dataToken: " + dataToken, Toast.LENGTH_LONG).show();
                     break;
