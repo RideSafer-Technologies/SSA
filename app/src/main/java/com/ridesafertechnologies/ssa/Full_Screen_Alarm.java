@@ -11,7 +11,7 @@ import android.view.View;
 
 public class Full_Screen_Alarm extends ActionBarActivity {
     private boolean close = false;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private static MediaPlayer mediaPlayer = new MediaPlayer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +34,8 @@ public class Full_Screen_Alarm extends ActionBarActivity {
             this.finish();
         }
         else if(close == false){
-            mediaPlayer.start();
             this.onResume();
+            mediaPlayer.start();
         }
     }
 
@@ -69,9 +69,13 @@ public class Full_Screen_Alarm extends ActionBarActivity {
 
         //this.finish();
     }
+    //send intent to snooze service
     public void snooze(View view) {
-        //send intent to snooze service
+        Intent callSnooze = new Intent(getApplicationContext(), Snooze_Timer.class);
+        callSnooze.putExtra("alarmType", true);
+        startService(callSnooze);
         mediaPlayer.stop();
+        this.onPause();
         this.moveTaskToBack(true);
         //need the snooze service to bring it back
     }

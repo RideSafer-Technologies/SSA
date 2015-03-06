@@ -39,7 +39,7 @@
         </service>
         <service
             android:name=".Snooze_Timer"
-            android:exported="false" >
+            android:exported="true" >
         </service>
 
         <activity

@@ -2,17 +2,19 @@ package com.ridesafertechnologies.ssa.util;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.ridesafertechnologies.ssa.R;
+import com.ridesafertechnologies.ssa.Snooze_Timer;
 
 public class SSA_Dialog_Alert extends ActionBarActivity {
 
     private boolean close = false;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private static MediaPlayer mediaPlayer = new MediaPlayer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,13 +62,18 @@ public class SSA_Dialog_Alert extends ActionBarActivity {
             this.onResume();
         }
     }
-    public void dismiss(){
+    public void dismiss(View view){
         mediaPlayer.release();
         mediaPlayer = null;
         this.moveTaskToBack(true);
+        //this.finish();
     }
-    public void snooze(){
-        mediaPlayer.pause();
+    public void snooze(View view){
+        Intent callSnooze = new Intent(getApplicationContext(), Snooze_Timer.class);
+        callSnooze.putExtra("alarmType", false);
+        startService(callSnooze);
+        mediaPlayer.stop();
+        this.onPause();
         this.moveTaskToBack(true);
     }
 }
