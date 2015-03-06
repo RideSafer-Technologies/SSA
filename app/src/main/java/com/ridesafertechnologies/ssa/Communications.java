@@ -36,7 +36,19 @@ public class Communications extends IntentService {
     private BluetoothDevice mBluetoothDevice = null;
 
     private static String dataToken = DEFAULT_DATA_TOKEN;
-    
+
+    public static boolean isConnectionStatus() {
+        return connectionStatus;
+    }
+
+    public static void setConnectionStatus(boolean connectionStatus) {
+        Communications.connectionStatus = connectionStatus;
+    }
+
+    private static boolean connectionStatus;
+
+
+
     private char delimiter = '~';
 
     /**
