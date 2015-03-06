@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ridesafertechnologies.ssa.util.dataService;
+import com.ridesafertechnologies.ssa.util.demoMode;
 
 /**
  *
@@ -34,11 +35,10 @@ public class About_Main_Activity extends ActionBarActivity {
 //    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     // demo mode boolean
-    private static boolean demoMode = false;
+    private static boolean isDemoMode = false;
 
     // Intents to handle IntentServices
     Intent communicationsIntent;
-    Intent dataParserIntent;
     Intent demoModeIntent;
 
     Persistent_Notification persistentNotification;
@@ -62,19 +62,13 @@ public class About_Main_Activity extends ActionBarActivity {
 
         // Initialize Intents
         communicationsIntent = new Intent(this, Communications.class);
-        dataParserIntent = new Intent(this, Data_Parser.class);
-        demoModeIntent = new Intent(this, demoModeIntent.getClass());
+        demoModeIntent = new Intent(this, demoMode.class);
 
         persistentNotification = new Persistent_Notification();
         persistentNotification.notify(this, "SSA", 1);
 
         showDialog(DEMO_MODE_ALERT);
 
-        // Start the Communications class background Service
-        if(!demoMode)
-            startService(communicationsIntent);
-        else
-            startService(demoModeIntent);
     } // END About_Main_Activity onCreate
 
     /**
@@ -155,6 +149,8 @@ public class About_Main_Activity extends ActionBarActivity {
 
         // Intent to handle display updates
         private Intent updateIntent;
+        Intent dataParserIntent;
+        Intent notificationTrigger;
 
 
 
@@ -183,6 +179,8 @@ public class About_Main_Activity extends ActionBarActivity {
 
             // Update screen contents
             updateIntent = new Intent(rootView.getContext(), dataService.class);
+            dataParserIntent = new Intent(rootView.getContext(), Data_Parser.class);
+            notificationTrigger = new Intent(rootView.getContext(), Notification_Trigger.class);
 
             return rootView;
         }  // END AboutScreenFragment OnCreateView()
@@ -202,8 +200,8 @@ public class About_Main_Activity extends ActionBarActivity {
         @Override
         public void onResume() {
             super.onResume();
-            updateText(Data_Parser.getIsChildInSeat(), Data_Parser.getIsTempThresholdReached(),
-                    Data_Parser.getIsCharging());
+            getActivity().startService(dataParserIntent);
+            getActivity().startService(notificationTrigger);
             getActivity().startService(updateIntent);
             getActivity().registerReceiver(broadcastReceiver, new IntentFilter(dataService.DATA_SERVICE_ACTION));
         } // END AboutScreenFragment onResume
@@ -266,6 +264,8 @@ public class About_Main_Activity extends ActionBarActivity {
                 batteryTextView.setText("Discharging");
                 batteryTextView.setTextColor(Color.RED);
             }
+
+            getActivity().startService(notificationTrigger);
         } // END AboutScreenFragment updateText
 
         private void updateUI(Intent updateIntent) {
@@ -325,13 +325,15 @@ public class About_Main_Activity extends ActionBarActivity {
 
     private final class CancelDemoOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialogInterface, int which) {
-            demoMode = false;
+            isDemoMode = false;
+            startService(communicationsIntent);
         }
     } // END CancelDemoOnClickListener
 
     private final class OkDemoOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialogInterface, int which) {
-            demoMode = true;
+            isDemoMode = true;
+            startService(demoModeIntent);
         }
     } // END OkDemoOnClickListener
 
@@ -339,6 +341,8 @@ public class About_Main_Activity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         persistentNotification.cancel(this);
+        stopService(demoModeIntent);
+        stopService(communicationsIntent);
     }
 
 } // END About_Main_Activity

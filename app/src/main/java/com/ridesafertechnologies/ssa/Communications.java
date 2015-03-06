@@ -31,6 +31,17 @@ public class Communications extends IntentService {
     protected static final int SUCCESS_CONNECT = 0;
     protected static final int MESSAGE_READ = 1;
 
+    public static boolean isConnectionStatus() {
+        return connectionStatus;
+    }
+
+    public static void setConnectionStatus(boolean connectionStatus) {
+        Communications.connectionStatus = connectionStatus;
+    }
+
+    private static boolean connectionStatus = false;
+
+
     // Bluetooth controls
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothDevice mBluetoothDevice = null;
@@ -80,7 +91,7 @@ public class Communications extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         findAndConnectSSA();
-        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     /**
@@ -89,10 +100,6 @@ public class Communications extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        Toast.makeText(getApplicationContext(), "Test onHandleIntent", Toast.LENGTH_LONG).show();
-
-
-
     }
 
     /**
@@ -102,9 +109,6 @@ public class Communications extends IntentService {
      */
     @Override
     public IBinder onBind(Intent intent) {
-
-        Toast.makeText(getApplicationContext(), "Test onBind", Toast.LENGTH_LONG).show();
-
         return null;
     }
 
@@ -113,10 +117,6 @@ public class Communications extends IntentService {
      */
     @Override
     public void onDestroy() {
-
-        Toast.makeText(getApplicationContext(), "Test onDestroy", Toast.LENGTH_LONG).show();
-
-
     }
 
     /**
@@ -133,14 +133,12 @@ public class Communications extends IntentService {
                     ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
                     //connectedThread.run();
                     connectedThread.bluetoothLoop.run();
-                    Toast.makeText(getApplicationContext(), "Connected to SSA", Toast.LENGTH_LONG).show();
                     break;
                 case MESSAGE_READ:
 
                     byte[] readBuf = (byte[]) msg.obj;
                     dataToken = new String(readBuf, 0, 126);
                     //dataToken = dataToken.substring(0, 126);
-                    Toast.makeText(getApplicationContext(), "SSA: " + dataToken, Toast.LENGTH_LONG).show();
                     break;
             }
         }
@@ -269,9 +267,6 @@ public class Communications extends IntentService {
          */
         // Will cancel an in-progress connection, and close the socket
         public void cancel() {
-
-            Toast.makeText(getApplicationContext(), "Test ConnectThread cancel", Toast.LENGTH_LONG).show();
-
             try {
                 mmSocket.close();
             } catch (IOException e) { }
@@ -302,7 +297,7 @@ public class Communications extends IntentService {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "Test ConnectedThread Constructor: IOException e", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "ConnectedThread Constructor: IOException e:" + e, Toast.LENGTH_LONG).show();
             }
 
             mmInStream = tmpIn;
@@ -325,7 +320,7 @@ public class Communications extends IntentService {
                     mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), "IOException e", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "bluetoothLoop: IOException e: " + e, Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -336,9 +331,6 @@ public class Communications extends IntentService {
          */
         /* Call this from the main activity to send data to the remote device */
         public void write(byte[] bytes) {
-
-            Toast.makeText(getApplicationContext(), "Test ConnectedThread write", Toast.LENGTH_LONG).show();
-
             try {
                 mmOutStream.write(bytes);
             } catch (IOException e) { }
@@ -349,9 +341,6 @@ public class Communications extends IntentService {
          */
         /* Call this from the main activity to shutdown the connection */
         public void cancel() {
-
-            Toast.makeText(getApplicationContext(), "Test ConnectedThread cancel", Toast.LENGTH_LONG).show();
-
             try {
                 mmSocket.close();
             } catch (IOException e) { }

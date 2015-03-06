@@ -2,12 +2,13 @@ package com.ridesafertechnologies.ssa;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.widget.Toast;
 
 /**
  *
  */
 public class Data_Parser extends IntentService {
+
+    public static final String TAG = "Data_Parser: ";
 
     //-------------------------------------FINAL VARIABLES----------------------------------------//
     private static final int FORCE_INDEX = 0;
@@ -26,6 +27,8 @@ public class Data_Parser extends IntentService {
     private static boolean isTempThresholdReached = false;
     private static boolean isAlarmState = false;
     private static boolean isCharging = false;
+
+    Intent notificationTrigger;
 
 
     //-----------------------------------------Getters--------------------------------------------//
@@ -55,6 +58,7 @@ public class Data_Parser extends IntentService {
         String communicationsData = Communications.getDataToken();
 
         if(communicationsData.startsWith("#") && communicationsData.endsWith("~")) {
+
             communicationsData = communicationsData.replaceAll("#", "");
             communicationsData = communicationsData.replaceAll("~", "");
             String[] dataParts = communicationsData.split("\\+");
@@ -68,13 +72,7 @@ public class Data_Parser extends IntentService {
                 isAlarmState = setVariable(dataParts[ALARM_INDEX], ALARM_INDEX);
                 //Set Charging
                 isCharging = setVariable(dataParts[CHARGING_INDEX], CHARGING_INDEX);
-            } else {
-                Toast.makeText(getApplicationContext(), "The string wasn't long enough",
-                        Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "This string was invalid",
-                    Toast.LENGTH_LONG).show();
         }
     }
 

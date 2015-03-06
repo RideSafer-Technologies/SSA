@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.ridesafertechnologies.ssa.Data_Parser;
 
@@ -44,7 +43,7 @@ public class dataService extends Service {
     };
 
     private void DisplayLoggingInfo() {
-        Log.d(TAG, "entered DisplayLoggingInfo");
+        //Log.d(TAG, "entered DisplayLoggingInfo");
 
         intent.putExtra("ChildInSeat", Data_Parser.getIsChildInSeat());
         intent.putExtra("TemperatureThreshold", Data_Parser.getIsTempThresholdReached());

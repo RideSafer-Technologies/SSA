@@ -29,7 +29,8 @@ public class Full_Screen_Alarm extends ActionBarActivity {
         close = intent.getExtras().getBoolean("close");
 
         if(close == true){
-            mediaPlayer.release();
+            if(mediaPlayer != null)
+                mediaPlayer.release();
             mediaPlayer = null;
             this.finish();
         }
@@ -63,10 +64,17 @@ public class Full_Screen_Alarm extends ActionBarActivity {
     public void dismiss(View view){
         //it only hides the activity and waits to be killed by the
         //notification trigger.
-        mediaPlayer.release();
-        mediaPlayer = null;
-        this.moveTaskToBack(true);
 
+        if(mediaPlayer != null)
+            mediaPlayer.release();
+        mediaPlayer = null;
+        Notification_Trigger.setDismissed(true);
+        this.moveTaskToBack(true);
+        Intent mainIntent = new Intent(getApplicationContext(), About_Main_Activity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(mainIntent);
         //this.finish();
     }
     //send intent to snooze service

@@ -31,7 +31,7 @@
         </service>
         <service
             android:name=".Notification_Trigger"
-            android:exported="false" >
+            android:exported="true" >
         </service>
         <service
             android:name=".Log_Updater"
