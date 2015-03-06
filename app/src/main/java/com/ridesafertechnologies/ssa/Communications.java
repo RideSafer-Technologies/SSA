@@ -36,6 +36,8 @@ public class Communications extends IntentService {
     private BluetoothDevice mBluetoothDevice = null;
 
     private static String dataToken = DEFAULT_DATA_TOKEN;
+    
+    private char delimiter = '~';
 
     /**
      * Default constructor for Communications IntentService
@@ -129,15 +131,16 @@ public class Communications extends IntentService {
                 case SUCCESS_CONNECT:
                     //TODO do something here that pushes to parser
                     ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
+                    //connectedThread.run();
                     connectedThread.bluetoothLoop.run();
+                    Toast.makeText(getApplicationContext(), "Connected to SSA", Toast.LENGTH_LONG).show();
                     break;
                 case MESSAGE_READ:
-                    Toast.makeText(getApplicationContext(), "Case " + MESSAGE_READ + " running", Toast.LENGTH_LONG).show();
+
                     byte[] readBuf = (byte[]) msg.obj;
-                    for(int i = 0; i < readBuf.length; i++)
-                        Toast.makeText(getApplicationContext(), "readBuf " + i + ": " + readBuf[i], Toast.LENGTH_SHORT).show();
-                    dataToken = new String(readBuf);
-                       Toast.makeText(getApplicationContext(), "dataToken: " + dataToken, Toast.LENGTH_LONG).show();
+                    dataToken = new String(readBuf, 0, 126);
+                    //dataToken = dataToken.substring(0, 126);
+                    Toast.makeText(getApplicationContext(), "SSA: " + dataToken, Toast.LENGTH_LONG).show();
                     break;
             }
         }
@@ -172,7 +175,7 @@ public class Communications extends IntentService {
                 // Add the name and address to an array adapter to show in a ListView
                 if (device.getName().equals("SSA")) {
                     mBluetoothDevice = device;
-                    connectDevice(mBluetoothDevice.getAddress());
+                    //connectDevice(mBluetoothDevice.getAddress());
                     ConnectThread newSSAConnection = new ConnectThread(mBluetoothDevice);
                     newSSAConnection.run();
                 }
@@ -180,13 +183,23 @@ public class Communications extends IntentService {
         }
     }
 
+    public char getDelimiter() {
+        return delimiter;
+    }
+
+    public void setDelimiter(char delimiter) {
+        this.delimiter = delimiter;
+    }
+
     /**
      *
      * @param address
      */
+    /*
     private void connectDevice(String address){
         //Log.d(TAG, "connectDevice address: " + address);
 
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             //bluetoothTextView.setText("Not a bluetooth device");
         }
@@ -198,7 +211,10 @@ public class Communications extends IntentService {
             e.printStackTrace();
         }
     }
-
+    
+    */
+    
+    
     /**
      *
      */
@@ -243,15 +259,10 @@ public class Communications extends IntentService {
 
             // Do work to manage the connection (in a separate thread)
             mHandler.obtainMessage(SUCCESS_CONNECT, mmSocket).sendToTarget();
+            //ConnectedThread mConnectedThread = new ConnectedThread(mmSocket);
+            //mConnectedThread.run();
         }
 
-        /**
-         *
-         * @param mmSocket2
-         */
-        private void manageConnectedSocket(BluetoothSocket mmSocket2){
-            //intentionally left blank
-        }
 
         /**
          *
@@ -301,14 +312,16 @@ public class Communications extends IntentService {
         public Runnable bluetoothLoop = new Runnable() {
             @Override
             public void run() {
-                byte[] buffer = new byte[1024];  // buffer store for the stream
+                byte[] buffer;  // buffer store for the stream
                 int bytes; // bytes returned from read()
 
                 // Keep listening to the InputStream until an exception occurs
                 try {
+                    buffer = new byte[1024]; // resets the buffer for new incoming data
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI activity
+                    
                     mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
