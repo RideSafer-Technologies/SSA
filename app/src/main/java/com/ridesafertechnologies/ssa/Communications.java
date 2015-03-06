@@ -125,32 +125,28 @@ public class Communications extends IntentService {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            Toast.makeText(getApplicationContext(), "Test mHandler", Toast.LENGTH_LONG).show();
-
             switch (msg.what) {
                 case SUCCESS_CONNECT:
                     //TODO do something here that pushes to parser
                     ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
+                    connectedThread.bluetoothLoop.run();
                     break;
                 case MESSAGE_READ:
+                    Toast.makeText(getApplicationContext(), "Case " + MESSAGE_READ + " running", Toast.LENGTH_LONG).show();
                     byte[] readBuf = (byte[]) msg.obj;
                     dataToken = new String(readBuf);
-                    startService(dataParserIntent);
-                    //populate a 'test' TextView with data pushed from Arduino
-                    //THIS IS NOT WORKING for some reason.
-                    //btTextView.setText(btString);
-                    //Toast.makeText(getActivity(), btString, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "DataToken:" + dataToken, Toast.LENGTH_LONG).show();
                     break;
             }
         }
     };
 
+
+
     /**
      *
      */
     public void findAndConnectSSA() {
-
-        Toast.makeText(getApplicationContext(), "Test findAndConnectSSA", Toast.LENGTH_LONG).show();
 
             /*
              * so far connectivity works ONLY if bluetooth is initially on.
@@ -188,8 +184,6 @@ public class Communications extends IntentService {
      */
     private void connectDevice(String address){
         //Log.d(TAG, "connectDevice address: " + address);
-        Toast.makeText(getApplicationContext(), "Test connectDevice", Toast.LENGTH_LONG).show();
-
 
         if (mBluetoothAdapter == null) {
             //bluetoothTextView.setText("Not a bluetooth device");
@@ -212,9 +206,6 @@ public class Communications extends IntentService {
 
         public ConnectThread(BluetoothDevice device) {
 
-
-            Toast.makeText(getApplicationContext(), "Test ConnectThread Constructor", Toast.LENGTH_LONG).show();
-
             // Use a temporary object that is later assigned to mmSocket,
             // because mmSocket is final
             BluetoothSocket tmp = null;
@@ -232,8 +223,6 @@ public class Communications extends IntentService {
          *
          */
         public void run() {
-
-            Toast.makeText(getApplicationContext(), "Test ConnectThread run", Toast.LENGTH_LONG).show();
 
             // Cancel discovery because it will slow down the connection
             mBluetoothAdapter.cancelDiscovery();
@@ -290,8 +279,6 @@ public class Communications extends IntentService {
          */
         public ConnectedThread(BluetoothSocket socket) {
 
-            Toast.makeText(getApplicationContext(), "Test ConnectedThread Constructor", Toast.LENGTH_LONG).show();
-
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -301,24 +288,21 @@ public class Communications extends IntentService {
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+                Toast.makeText(getApplicationContext(), "Test ConnectedThread Constructor: IOException e", Toast.LENGTH_LONG).show();
+            }
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
         }
 
-        /**
-         *
-         */
-        public void run() {
+        public Runnable bluetoothLoop = new Runnable() {
+            @Override
+            public void run() {
+                byte[] buffer = new byte[1024];  // buffer store for the stream
+                int bytes; // bytes returned from read()
 
-            Toast.makeText(getApplicationContext(), "Test connectedThread run", Toast.LENGTH_LONG).show();
-
-            byte[] buffer = new byte[1024];  // buffer store for the stream
-            int bytes; // bytes returned from read()
-
-            // Keep listening to the InputStream until an exception occurs
-            while (true) {
+                // Keep listening to the InputStream until an exception occurs
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
@@ -326,10 +310,10 @@ public class Communications extends IntentService {
                     mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
-                    break;
+                    Toast.makeText(getApplicationContext(), "IOException e", Toast.LENGTH_LONG).show();
                 }
             }
-        }
+        };
 
         /**
          *
