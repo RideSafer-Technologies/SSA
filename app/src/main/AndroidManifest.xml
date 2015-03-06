@@ -69,11 +69,17 @@
         </service>
 
         <activity
-            android:theme="@style/Theme.AppCompat.Dialog"
-            android:exported="true"
             android:name=".util.SSA_Dialog_Alert"
-            android:label="@string/title_activity_ssa__dialog__alert" >
+            android:exported="true"
+            android:label="@string/title_activity_ssa__dialog__alert"
+            android:theme="@style/Theme.AppCompat.Dialog" >
         </activity>
+
+        <service
+            android:name=".util.demoMode"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>

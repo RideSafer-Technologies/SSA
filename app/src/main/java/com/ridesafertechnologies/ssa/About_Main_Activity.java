@@ -30,11 +30,16 @@ public class About_Main_Activity extends ActionBarActivity {
 
     // Constant static variables to reduce "Hard-Coding"
     private static final int BLUETOOTH_ALERT = 10;
+    private static final int DEMO_MODE_ALERT = 20;
 //    public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    // demo mode boolean
+    private static boolean demoMode = false;
 
     // Intents to handle IntentServices
     Intent communicationsIntent;
     Intent dataParserIntent;
+    Intent demoModeIntent;
 
     Persistent_Notification persistentNotification;
 
@@ -58,12 +63,18 @@ public class About_Main_Activity extends ActionBarActivity {
         // Initialize Intents
         communicationsIntent = new Intent(this, Communications.class);
         dataParserIntent = new Intent(this, Data_Parser.class);
+        demoModeIntent = new Intent(this, demoModeIntent.getClass());
 
         persistentNotification = new Persistent_Notification();
         persistentNotification.notify(this, "SSA", 1);
 
+        showDialog(DEMO_MODE_ALERT);
+
         // Start the Communications class background Service
-        startService(communicationsIntent);
+        if(!demoMode)
+            startService(communicationsIntent);
+        else
+            startService(demoModeIntent);
     } // END About_Main_Activity onCreate
 
     /**
@@ -271,9 +282,10 @@ public class About_Main_Activity extends ActionBarActivity {
 
     @Override
     protected Dialog onCreateDialog(int id) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         switch (id) {
             case BLUETOOTH_ALERT:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Bluetooth Verification");
                 builder.setMessage("The Bluetooth is turned off. The SSA App requires that the " +
                         "Bluetooth be turned on in order to function properly.");
@@ -282,6 +294,16 @@ public class About_Main_Activity extends ActionBarActivity {
                 builder.setNegativeButton("Cancel", new CancelOnClickListener());
                 AlertDialog bluetoothDialog = builder.create();
                 bluetoothDialog.show();
+                break;
+            case DEMO_MODE_ALERT:
+                builder.setTitle("Demo Mode");
+                builder.setMessage("Would you like to enable the demonstration mode?");
+                builder.setCancelable(true);
+                builder.setPositiveButton("Start Demo", new OkDemoOnClickListener());
+                builder.setNegativeButton("Cancel", new CancelDemoOnClickListener());
+                AlertDialog demoDialog = builder.create();
+                demoDialog.show();
+                break;
         }
         return super.onCreateDialog(id);
     } // END of Dialog
@@ -289,7 +311,7 @@ public class About_Main_Activity extends ActionBarActivity {
     private final class CancelOnClickListener implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialogInterface, int which) {
             Toast.makeText(getApplicationContext(), "The SSA App will not work correctly without " +
-                    "the bluetooth connection", Toast.LENGTH_LONG).show();
+                    "the bluetooth connection working.", Toast.LENGTH_LONG).show();
         }
     } // END CancelOnClickListener
 
@@ -300,6 +322,18 @@ public class About_Main_Activity extends ActionBarActivity {
             startActivity(intentOpenBluetoothSettings);
         }
     } // END OkOnClickListener
+
+    private final class CancelDemoOnClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialogInterface, int which) {
+            demoMode = false;
+        }
+    } // END CancelDemoOnClickListener
+
+    private final class OkDemoOnClickListener implements DialogInterface.OnClickListener {
+        public void onClick(DialogInterface dialogInterface, int which) {
+            demoMode = true;
+        }
+    } // END OkDemoOnClickListener
 
     @Override
     protected void onDestroy() {
