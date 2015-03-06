@@ -23,25 +23,27 @@ public class Snooze_Timer extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            alarmtype = intent.getExtras().getBoolean("alarmtype");
+
             try {
-                Thread.sleep(5000);
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (alarmtype==true) {
+            alarmtype = intent.getExtras().getBoolean("alarmtype");
+            if (alarmtype) {
                 //fullscreen alarm snooze
                 Intent resumeAlarm = new Intent(getApplicationContext(), Full_Screen_Alarm.class);
                 resumeAlarm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 resumeAlarm.putExtra("close", false);
                 startActivity(resumeAlarm);
-            } else if (alarmtype==false) {
+            } else if (!alarmtype) {
                 //dialog alarm snooze
                 Intent resumeDialog = new Intent(getApplicationContext(), SSA_Dialog_Alert.class);
                 resumeDialog.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 resumeDialog.putExtra("close", false);
                 startActivity(resumeDialog);
             }
+
         }
     }
 

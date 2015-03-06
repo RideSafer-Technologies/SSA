@@ -14,7 +14,7 @@ import com.ridesafertechnologies.ssa.Snooze_Timer;
 public class SSA_Dialog_Alert extends ActionBarActivity {
 
     private boolean close = false;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private static MediaPlayer mediaPlayer = new MediaPlayer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +66,7 @@ public class SSA_Dialog_Alert extends ActionBarActivity {
         mediaPlayer.release();
         mediaPlayer = null;
         this.moveTaskToBack(true);
+        //this.finish();
     }
     public void snooze(View view){
         Intent callSnooze = new Intent(getApplicationContext(), Snooze_Timer.class);
