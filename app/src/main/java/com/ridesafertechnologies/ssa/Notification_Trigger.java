@@ -50,13 +50,13 @@ public class Notification_Trigger extends IntentService {
         updateData();
         setAlarmType();
         if(child && !alarmTrig && !dismissed) {
-            Log.d(TAG, "Passed - if(child && !alarmTrig && !dismissed)");
+//            Log.d(TAG, "Passed - if(child && !alarmTrig && !dismissed)");
                 if(temp && !charging) {
-                    Log.d(TAG, "Passed - if(temp && !charging)");
+//                    Log.d(TAG, "Passed - if(temp && !charging)");
                     runAlarm();
                 } else if (!connection) {
-                    Log.d(TAG, "Failed - if(temp)");
-                    Log.d(TAG, "Passed - else if (!connection)");
+//                    Log.d(TAG, "Failed - if(temp)");
+//                    Log.d(TAG, "Passed - else if (!connection)");
                     runAlarm();
                 }
             if(!child && dismissed)
@@ -110,7 +110,6 @@ public class Notification_Trigger extends IntentService {
     // executes an alarm.
     public void runAlarm(){
         if(alarmType == 0){
-            Log.d(TAG, "Full Screen Alarm: Run");
             alarmTrig = true;
             Intent fullAlarm;
             fullAlarm = new Intent(getApplicationContext(), Full_Screen_Alarm.class);
@@ -169,7 +168,6 @@ public class Notification_Trigger extends IntentService {
     }
     protected void updateData(){
         setChild(Data_Parser.getIsChildInSeat());
-        Log.d(TAG, " Connection = " + connection);
         setTemp(Data_Parser.getIsTempThresholdReached());
         setCharging(Data_Parser.getIsCharging());
         setConnection(Communications.isConnectionStatus());

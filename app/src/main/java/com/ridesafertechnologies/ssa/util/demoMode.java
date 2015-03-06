@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ridesafertechnologies.ssa.Communications;
 import com.ridesafertechnologies.ssa.Notification_Trigger;
@@ -67,16 +68,14 @@ public class demoMode extends Service {
 
     private Runnable delay = new Runnable() {
         public void run() {
-
-            Log.d(TAG, "Start Runnable: id = " + id +
-                    "\nAlarm Trig : " + Notification_Trigger.getAlarmTrig() +
-                    "\nCharging   : " + Notification_Trigger.getCharging() +
-                    "\nChild      : " + Notification_Trigger.getChild() +
-                    "\nConnection : " + Notification_Trigger.getConnection() +
-                    "\nTemperature: " + Notification_Trigger.getTemp());
             int theDelay;
-            if (id == DEMO_STRING_FINISH)
+            if (id == DEMO_STRING_FINISH) {
+
+                Log.d(TAG, "Demo Finished");
+                Toast.makeText(getApplicationContext(), "Demo Finished", Toast.LENGTH_LONG).show();
                 return;
+            }
+
             pushString(id);
 
 
@@ -136,24 +135,38 @@ public class demoMode extends Service {
                 token = DEMO_STRING_0;
                 break;
             case DEMO_STRING_0_VAL:
+                Log.d(TAG, "Demo Starting");
+                Toast.makeText(getApplicationContext(), "Demo Started", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_0;
                 break;
             case DEMO_STRING_1_VAL:
+                Log.d(TAG, "We're going to add a \"child\" to our force sensor");
+                Toast.makeText(getApplicationContext(), "We're going to add a \"child\" to our force sensor", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_1;
                 break;
             case DEMO_STRING_2_VAL:
+                Log.d(TAG, "We're going to introduce heat into the equation. Local alarm will go off as well as android alarm");
+                Toast.makeText(getApplicationContext(), "We're going to introduce heat into the equation. Local alarm will go off as well as android alarm", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_2;
                 break;
             case DEMO_STRING_3_VAL:
+                Log.d(TAG, "Child Removed from the seat & Temperature returned to normal");
+                Toast.makeText(getApplicationContext(), "Child Removed from the seat & Temperature returned to normal", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_3;
                 break;
             case DEMO_STRING_4_VAL:
+                Log.d(TAG, "Add child to seat");
+                Toast.makeText(getApplicationContext(), "Add child to seat", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_4;
                 break;
             case DEMO_STRING_5_VAL:
+                Log.d(TAG, "Add heat, no alarms because car is on");
+                Toast.makeText(getApplicationContext(), "Add heat, no alarms because car is on", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_5;
                 break;
             case DEMO_STRING_6_VAL:
+                Log.d(TAG, "Bluetooth Connectivity disconnected while child is still in car. Sound alarm!");
+                Toast.makeText(getApplicationContext(), "Bluetooth Connectivity disconnected while child is still in car. Sound alarm!", Toast.LENGTH_LONG).show();
                 token = DEMO_STRING_6;
                 break;
             default:
