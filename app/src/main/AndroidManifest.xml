@@ -69,7 +69,8 @@
         </service>
 
         <activity
-            android:theme="@android:style/Theme.Dialog"
+            android:theme="@style/Theme.AppCompat.Dialog"
+            android:exported="true"
             android:name=".util.SSA_Dialog_Alert"
             android:label="@string/title_activity_ssa__dialog__alert" >
         </activity>

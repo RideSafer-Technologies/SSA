@@ -50,5 +50,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="btString"></string>
     <string name="title_activity_ssa__dialog__alert">SSA_Dialog_Alert</string>
+    <string name="ChildInCar">Alert! Your \nChild is Still \nIn The Car!</string>
 
 </resources>
