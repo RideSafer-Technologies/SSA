@@ -129,7 +129,6 @@ public class Communications extends IntentService {
 
             switch (msg.what) {
                 case SUCCESS_CONNECT:
-                    //TODO do something here that pushes to parser
                     ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket) msg.obj);
                     //connectedThread.run();
                     connectedThread.bluetoothLoop.run();
@@ -137,10 +136,12 @@ public class Communications extends IntentService {
                     break;
                 case MESSAGE_READ:
 
-                    byte[] readBuf = (byte[]) msg.obj;
-                    dataToken = new String(readBuf, 0, 126);
-                    //dataToken = dataToken.substring(0, 126);
-                    Toast.makeText(getApplicationContext(), "SSA: " + dataToken, Toast.LENGTH_LONG).show();
+                    //byte[] readBuf = (byte[]) msg.obj;
+                    //dataToken = new String(readBuf, 0, 126);
+                    dataToken = (String) msg.obj;
+                    if(msg.arg1 > 0) {
+                        Toast.makeText(getApplicationContext(), "SSA: " + dataToken, Toast.LENGTH_LONG).show();
+                    }
                     break;
             }
         }
@@ -313,19 +314,50 @@ public class Communications extends IntentService {
             @Override
             public void run() {
                 byte[] buffer;  // buffer store for the stream
-                int bytes; // bytes returned from read()
+                byte[] secondary;
+                int bytes = 0; // bytes returned from read()
 
                 // Keep listening to the InputStream until an exception occurs
-                try {
-                    buffer = new byte[1024]; // resets the buffer for new incoming data
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI activity
-                    
-                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
-                } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), "IOException e", Toast.LENGTH_LONG).show();
+                while(bytes <= 26) {//i tried TRUE here, but i think its TOO labor intensive
+
+                    try {
+                        buffer = new byte[256]; // resets the buffer for new incoming data
+                        secondary = new byte[256];
+                        int start = 0;
+                        
+                        if(mmInStream.available() > 0) {
+                            // Read from the InputStream
+                            sleep(1000);
+                            bytes = mmInStream.read(buffer);
+                            sleep(1000);
+                            bytes = mmInStream.read(buffer);
+                            sleep(1000);
+                            bytes = mmInStream.read(buffer);
+                            sleep(1000);
+                            for(int i = 0; i < buffer.length; i++)
+                            {
+                                if(buffer[i] == '#')
+                                {
+                                    start = i;
+                                }
+                            }
+                            if(secondary.length < 25)
+                            {
+                                this.run();
+                            }
+                            System.arraycopy(buffer, start, secondary, 0, 26);
+                            //if(mmInStream.available() > 10) {
+                            String readMessage = new String(secondary, 0, 26);
+                            // Send the obtained bytes to the UI activity
+                            mHandler.obtainMessage(MESSAGE_READ, bytes, -1, readMessage)
+                                    .sendToTarget();
+                        }
+                    } catch (IOException e) {
+                        Toast.makeText(getApplicationContext(), "IOException e", Toast.LENGTH_LONG).show();
+                        break;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
