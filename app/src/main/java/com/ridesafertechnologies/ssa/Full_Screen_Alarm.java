@@ -21,16 +21,21 @@ public class Full_Screen_Alarm extends ActionBarActivity {
         mediaPlayer.start();
 
     }
-    //use another intent to close the full screen alarm activity
+    //use another intent to close the full screen alarm activity or resume it
+    //from snooze.
     @Override
     protected void onNewIntent(Intent intent){
         super.onNewIntent(intent);
         close = intent.getExtras().getBoolean("close");
 
-        if(close = true){
+        if(close == true){
             mediaPlayer.release();
             mediaPlayer = null;
             this.finish();
+        }
+        else if(close == false){
+            mediaPlayer.start();
+            this.onResume();
         }
     }
 

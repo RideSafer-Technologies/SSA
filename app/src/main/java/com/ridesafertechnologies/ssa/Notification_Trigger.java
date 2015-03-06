@@ -7,6 +7,8 @@ import android.media.MediaPlayer;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.ridesafertechnologies.ssa.util.SSA_Dialog_Alert;
+
 import static android.widget.Toast.LENGTH_LONG;
 
 
@@ -97,6 +99,12 @@ public class Notification_Trigger extends IntentService {
         }
         else if(alarmType == 1){
             //run code dialog alert
+            Intent dialogAlert;
+            dialogAlert = new Intent(getApplicationContext(), SSA_Dialog_Alert.class);
+            dialogAlert.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            dialogAlert.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(dialogAlert);
+
         }
         else if(alarmType == 2){
             //run code toast notification
@@ -123,6 +131,9 @@ public class Notification_Trigger extends IntentService {
         }
         else if(alarmType == 1){
             //kill dialog alarm
+            Intent closeDialog = new Intent(getApplicationContext(), SSA_Dialog_Alert.class);
+            closeDialog.putExtra("close", true);
+            startActivity(closeDialog);
         }
         else if(alarmType ==2){
             mediaPlayer.release();
